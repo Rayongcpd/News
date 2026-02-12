@@ -60,12 +60,7 @@
 
       <div class="sidebar-nav">
         <div class="nav-item">
-          <a class="nav-link active" data-page="dashboard" onclick="navigateTo('dashboard')">
-            <i class="fas fa-th-large"></i> แดชบอร์ด
-          </a>
-        </div>
-        <div class="nav-item">
-          <a class="nav-link" data-page="calendar" onclick="navigateTo('calendar')">
+          <a class="nav-link active" data-page="calendar" onclick="navigateTo('calendar')">
             <i class="fas fa-calendar-alt"></i> ปฏิทิน
           </a>
         </div>
@@ -98,49 +93,8 @@
     <!-- Main Content Area -->
     <main class="main-content">
 
-      <!-- ======== DASHBOARD PAGE ======== -->
-      <div id="page-dashboard" class="page-section active-page">
-        <div class="page-header">
-          <h3><i class="fas fa-th-large"></i>แดชบอร์ด</h3>
-        </div>
-
-        <div class="row g-4 mb-4">
-          <div class="col-md-4">
-            <div class="stat-card announcements">
-              <div class="stat-icon"><i class="fas fa-bullhorn"></i></div>
-              <div class="stat-value" id="statAnnouncements">0</div>
-              <div class="stat-label">ข่าวประชาสัมพันธ์ทั้งหมด</div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="stat-card vehicles">
-              <div class="stat-icon"><i class="fas fa-car"></i></div>
-              <div class="stat-value" id="statVehicleLogs">0</div>
-              <div class="stat-label">บันทึกการใช้รถทั้งหมด</div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="stat-card active">
-              <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-              <div class="stat-value" id="statActiveVehicles">0</div>
-              <div class="stat-label">รถที่กำลังใช้งาน</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="data-card">
-          <div class="data-card-header">
-            <h5><i class="fas fa-clock me-2"></i>ข้อมูลสรุป</h5>
-          </div>
-          <div class="p-4">
-            <p style="color:var(--text-secondary);">ยินดีต้อนรับเข้าสู่ระบบจัดการสำนักงาน —
-              เลือกเมนูด้านซ้ายเพื่อจัดการข้อมูล</p>
-          </div>
-        </div>
-      </div>
-
       <!-- ======== CALENDAR PAGE ======== -->
-      <div id="page-calendar" class="page-section">
+      <div id="page-calendar" class="page-section active-page">
         <div class="page-header">
           <h3><i class="fas fa-calendar-alt"></i>ปฏิทิน</h3>
         </div>

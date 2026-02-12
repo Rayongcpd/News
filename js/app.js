@@ -267,7 +267,7 @@ const Announcements = {
             showToast(result.message, 'success');
             bootstrap.Modal.getInstance(document.getElementById('annFormModal')).hide();
             this.load();
-            Dashboard.load(); // Refresh dashboard counts
+            Calendar.load(); // Refresh calendar
         } else {
             showToast(result.error, 'error');
         }
@@ -413,26 +413,14 @@ const VehicleLogs = {
         if (result.success) {
             showToast(result.message, 'success');
             this.load();
-            Dashboard.load();
+            Calendar.load();
         } else {
             showToast(result.error, 'error');
         }
     }
 };
 
-// ============================================================
-// 📊 DASHBOARD MODULE
-// ============================================================
-const Dashboard = {
-    async load() {
-        const result = await API.get({ action: 'getDashboard' });
-        if (result.success) {
-            animateCounter('statAnnouncements', result.totalAnnouncements || 0);
-            animateCounter('statVehicleLogs', result.totalVehicleLogs || 0);
-            animateCounter('statActiveVehicles', result.activeVehicles || 0);
-        }
-    }
-};
+
 
 // ============================================================
 // 📅 CALENDAR MODULE
@@ -685,7 +673,7 @@ function showApp() {
     });
 
     // Navigate to dashboard
-    navigateTo('dashboard');
+    navigateTo('calendar');
 }
 
 /** Navigate between pages */
@@ -702,9 +690,6 @@ function navigateTo(page) {
 
     // Load data for the page
     switch (page) {
-        case 'dashboard':
-            Dashboard.load();
-            break;
         case 'calendar':
             Calendar.load();
             break;
