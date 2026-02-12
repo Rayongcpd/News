@@ -80,10 +80,13 @@ const API = {
             body.password = AppState.user.password;
         }
         try {
+            // NOTE: GAS Web App ไม่ support preflight CORS (OPTIONS request)
+            // ดังนั้นต้องใช้ Content-Type: text/plain เพื่อหลีกเลี่ยง preflight
             const res = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(body),
+                redirect: 'follow'
             });
             return await res.json();
         } catch (err) {
