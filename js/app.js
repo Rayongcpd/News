@@ -487,10 +487,11 @@ const Calendar = {
                     this.events.push({
                         type: 'vehicle',
                         date: this.normalizeDate(item.Date),
-                        label: `${item.CarLicense || 'รถ'} → ${item.Destination || ''}`,
+                        label: item.CarLicense || 'รถ',
                         id: item.ID,
                         driver: item.Driver || '',
-                        status: item.Status || ''
+                        status: item.Status || '',
+                        destination: item.Destination || ''
                     });
                 }
             });
@@ -541,14 +542,17 @@ const Calendar = {
             const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
             const dayEvents = eventsMap[dateStr] || [];
 
+            const newsEvents = dayEvents.filter(e => e.type === 'announcement');
+            const vehicleEvents = dayEvents.filter(e => e.type === 'vehicle');
+
             let eventsHtml = '';
-            const maxShow = 3;
-            dayEvents.slice(0, maxShow).forEach(ev => {
-                const icon = ev.type === 'announcement' ? '📢' : '🚗';
-                eventsHtml += `<div class="calendar-event ${ev.type}" onclick="Calendar.showEvent(event, '${ev.type}', '${ev.id}')" title="${escapeHtml(ev.label)}">${icon} ${escapeHtml(ev.label)}</div>`;
-            });
-            if (dayEvents.length > maxShow) {
-                eventsHtml += `<div class="calendar-event-more">+${dayEvents.length - maxShow} เพิ่มเติม</div>`;
+
+            if (newsEvents.length > 0) {
+                eventsHtml += `<div class="calendar-event announcement" onclick="Calendar.showGroup('${dateStr}', 'announcement')" title="ดูข่าวประชาสัมพันธ์">📢 ข่าวประชาสัมพันธ์ (${newsEvents.length})</div>`;
+            }
+
+            if (vehicleEvents.length > 0) {
+                eventsHtml += `<div class="calendar-event vehicle" onclick="Calendar.showGroup('${dateStr}', 'vehicle')" title="ดูบันทึกการใช้รถ">🚗 บันทึกการใช้รถ (${vehicleEvents.length})</div>`;
             }
 
             html += `<div class="calendar-day${isToday ? ' today' : ''}">
@@ -587,28 +591,52 @@ const Calendar = {
 
     /** Show event detail in modal */
     showEvent(e, type, id) {
-        e.stopPropagation();
-        const ev = this.events.find(ev => ev.id === id && ev.type === type);
-        if (!ev) return;
+        // Legacy function, kept just in case, but showGroup is preferred now.
+        this.showGroup(this.currentDate.toISOString().split('T')[0], type);
+    },
 
-        if (type === 'announcement') {
-            document.getElementById('detailModalTitle').textContent = ev.label;
-            document.getElementById('detailModalBody').innerHTML = `
-                <p><strong>📅 วันที่:</strong> ${ev.date}</p>
-                <p><strong>👤 โพสต์โดย:</strong> ${ev.postedBy}</p>
-                <hr style="border-color: var(--border-color);">
-                <div class="detail-text">${escapeHtml(ev.detail || 'ไม่มีรายละเอียด')}</div>
-            `;
+    /** Show grouped events in modal */
+    showGroup(dateStr, type) {
+        // Prevent bubbling if called from onclick directly (though in HTML we passed string values)
+        if (event) event.stopPropagation();
+
+        const typeName = type === 'announcement' ? 'ข่าวประชาสัมพันธ์' : 'บันทึกการใช้รถ';
+        const modalTitle = `${dateStr} - ${typeName}`;
+
+        // Filter events
+        const groupEvents = this.events.filter(ev => ev.date === dateStr && ev.type === type);
+
+        let html = '<div class="list-group list-group-flush">';
+        if (groupEvents.length === 0) {
+            html += '<div class="p-3 text-center text-muted">ไม่พบข้อมูล</div>';
         } else {
-            document.getElementById('detailModalTitle').textContent = '🚗 บันทึกการใช้รถ';
-            document.getElementById('detailModalBody').innerHTML = `
-                <p><strong>📅 วันที่:</strong> ${ev.date}</p>
-                <p><strong>🚗 รายละเอียด:</strong> ${escapeHtml(ev.label)}</p>
-                <p><strong>👤 พนักงานขับ:</strong> ${escapeHtml(ev.driver)}</p>
-                <p><strong>📌 สถานะ:</strong> <span class="badge-status badge-${(ev.status || '').toLowerCase()}">${escapeHtml(ev.status)}</span></p>
-            `;
+            groupEvents.forEach(ev => {
+                if (type === 'announcement') {
+                    html += `
+                        <div class="list-group-item bg-transparent" style="border-bottom: 1px solid var(--border-color);">
+                            <h6 class="mb-1 text-primary-custom">${escapeHtml(ev.label)}</h6>
+                            <p class="mb-1 small" style="color: var(--text-secondary);">${escapeHtml(ev.detail || 'ไม่มีรายละเอียด')}</p>
+                            <small class="text-muted"><i class="fas fa-user me-1"></i> ${escapeHtml(ev.postedBy)}</small>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="list-group-item bg-transparent" style="border-bottom: 1px solid var(--border-color);">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <h6 class="mb-0 text-secondary-custom">🚗 ${escapeHtml(ev.label)}</h6> <!-- Label is CarLicense -->
+                                <span class="badge-status badge-${(ev.status || '').toLowerCase()}">${escapeHtml(ev.status)}</span>
+                            </div>
+                             <p class="mb-1 small" style="color: var(--text-secondary);"><i class="fas fa-map-marker-alt me-1"></i> ปลายทาง: ${escapeHtml(ev.destination || '')}</p>
+                            <small class="text-muted"><i class="fas fa-id-card me-1"></i> พนักงานขับ: ${escapeHtml(ev.driver)}</small>
+                        </div>
+                    `;
+                }
+            });
         }
+        html += '</div>';
 
+        document.getElementById('detailModalTitle').textContent = modalTitle;
+        document.getElementById('detailModalBody').innerHTML = html;
         new bootstrap.Modal(document.getElementById('detailModal')).show();
     }
 };
