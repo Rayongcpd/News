@@ -81,12 +81,10 @@ const API = {
         }
         try {
             // NOTE: GAS Web App ไม่ support preflight CORS (OPTIONS request)
-            // ดังนั้นต้องใช้ Content-Type: text/plain เพื่อหลีกเลี่ยง preflight
+            // ห้ามตั้ง headers ใดๆ เพื่อให้เป็น "simple request" ที่ไม่ trigger preflight
             const res = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(body),
-                redirect: 'follow'
+                body: JSON.stringify(body)
             });
             return await res.json();
         } catch (err) {
