@@ -166,15 +166,15 @@ const Announcements = {
 
         container.innerHTML = data.map((item, index) => `
       <tr class="fade-in" style="animation-delay: ${index * 0.05}s">
-        <td><span style="color: var(--text-muted); font-size: 12px;">${index + 1}</span></td>
-        <td>${escapeHtml(item.Date || '')}</td>
-        <td>
+        <td data-label="#"><span style="color: var(--text-muted); font-size: 12px;">${index + 1}</span></td>
+        <td data-label="วันที่">${escapeHtml(item.Date || '')}</td>
+        <td data-label="หัวข้อ / รายละเอียด">
           <strong>${escapeHtml(item.Title || '')}</strong>
           <br><small class="text-muted">${truncate(item.Detail || '', 60)}</small>
         </td>
-        <td>${item.FileURL ? `<a href="${item.FileURL}" target="_blank" class="file-link"><i class="fas fa-paperclip"></i> ดูไฟล์</a>` : '<span style="color: var(--text-muted);">-</span>'}</td>
-        <td><small>${escapeHtml(item.PostedBy || '')}</small></td>
-        <td>
+        <td data-label="ไฟล์แนบ">${item.FileURL ? `<a href="${item.FileURL}" target="_blank" class="file-link"><i class="fas fa-paperclip"></i> ดูไฟล์</a>` : '<span style="color: var(--text-muted);">-</span>'}</td>
+        <td data-label="โพสต์โดย"><small>${escapeHtml(item.PostedBy || '')}</small></td>
+        <td data-label="จัดการ">
           <button class="btn btn-outline-custom btn-sm me-1" onclick="Announcements.showDetail('${item.ID}')" title="ดูรายละเอียด">
             <i class="fas fa-eye"></i>
           </button>
@@ -319,15 +319,15 @@ const VehicleLogs = {
 
         container.innerHTML = data.map((item, index) => `
       <tr class="fade-in" style="animation-delay: ${index * 0.05}s">
-        <td><span style="color: var(--text-muted); font-size: 12px;">${index + 1}</span></td>
-        <td>${escapeHtml(item.Date || '')}</td>
-        <td><strong>${escapeHtml(item.CarLicense || '')}</strong></td>
-        <td>${escapeHtml(item.Destination || '')}</td>
-        <td class="text-end">${formatNumber(item.MileageStart)}</td>
-        <td class="text-end">${formatNumber(item.MileageEnd)}</td>
-        <td>${escapeHtml(item.Driver || '')}</td>
-        <td><span class="badge-status badge-${(item.Status || '').toLowerCase()}">${escapeHtml(item.Status || '')}</span></td>
-        <td>
+        <td data-label="#"><span style="color: var(--text-muted); font-size: 12px;">${index + 1}</span></td>
+        <td data-label="วันที่">${escapeHtml(item.Date || '')}</td>
+        <td data-label="ทะเบียนรถ"><strong>${escapeHtml(item.CarLicense || '')}</strong></td>
+        <td data-label="ปลายทาง">${escapeHtml(item.Destination || '')}</td>
+        <td data-label="เลขไมล์เริ่ม" class="text-end">${formatNumber(item.MileageStart)}</td>
+        <td data-label="เลขไมล์สิ้นสุด" class="text-end">${formatNumber(item.MileageEnd)}</td>
+        <td data-label="พนักงานขับ">${escapeHtml(item.Driver || '')}</td>
+        <td data-label="สถานะ"><span class="badge-status badge-${(item.Status || '').toLowerCase()}">${escapeHtml(item.Status || '')}</span></td>
+        <td data-label="จัดการ">
           ${AppState.isAdmin() ? `
           <button class="btn btn-outline-custom btn-sm me-1" onclick="VehicleLogs.showEdit('${item.ID}')" title="แก้ไข">
             <i class="fas fa-edit"></i>
