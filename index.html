@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@
   <!-- Custom CSS -->
   <link href="css/style.css" rel="stylesheet">
 </head>
+
 <body>
 
   <!-- ============ TOAST CONTAINER ============ -->
@@ -32,7 +34,7 @@
       </div>
       <div class="form-floating mb-4">
         <input type="password" class="form-control" id="loginPassword" placeholder="Password"
-               onkeydown="if(event.key==='Enter') Auth.login()">
+          onkeydown="if(event.key==='Enter') Auth.login()">
         <label for="loginPassword"><i class="fas fa-lock me-2"></i>Password</label>
       </div>
       <button id="loginBtn" class="btn btn-primary-custom w-100" onclick="Auth.login()">
@@ -60,6 +62,11 @@
         <div class="nav-item">
           <a class="nav-link active" data-page="dashboard" onclick="navigateTo('dashboard')">
             <i class="fas fa-th-large"></i> แดชบอร์ด
+          </a>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link" data-page="calendar" onclick="navigateTo('calendar')">
+            <i class="fas fa-calendar-alt"></i> ปฏิทิน
           </a>
         </div>
         <div class="nav-item">
@@ -126,7 +133,39 @@
             <h5><i class="fas fa-clock me-2"></i>ข้อมูลสรุป</h5>
           </div>
           <div class="p-4">
-            <p style="color:var(--text-secondary);">ยินดีต้อนรับเข้าสู่ระบบจัดการสำนักงาน — เลือกเมนูด้านซ้ายเพื่อจัดการข้อมูล</p>
+            <p style="color:var(--text-secondary);">ยินดีต้อนรับเข้าสู่ระบบจัดการสำนักงาน —
+              เลือกเมนูด้านซ้ายเพื่อจัดการข้อมูล</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== CALENDAR PAGE ======== -->
+      <div id="page-calendar" class="page-section">
+        <div class="page-header">
+          <h3><i class="fas fa-calendar-alt"></i>ปฏิทิน</h3>
+        </div>
+
+        <div class="data-card">
+          <div class="calendar-header">
+            <button class="btn btn-outline-custom btn-sm" onclick="Calendar.prev()">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <h4 id="calendarTitle">กุมภาพันธ์ 2569</h4>
+            <button class="btn btn-outline-custom btn-sm" onclick="Calendar.next()">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+            <button class="btn btn-primary-custom btn-sm ms-2" onclick="Calendar.goToday()">
+              <i class="fas fa-crosshairs me-1"></i>วันนี้
+            </button>
+          </div>
+
+          <div class="calendar-legend">
+            <span class="legend-item"><span class="legend-dot announcement"></span>ข่าวประชาสัมพันธ์</span>
+            <span class="legend-item"><span class="legend-dot vehicle"></span>บันทึกการใช้รถ</span>
+          </div>
+
+          <div class="calendar-grid" id="calendarGrid">
+            <!-- Rendered by JS -->
           </div>
         </div>
       </div>
@@ -154,7 +193,13 @@
                 </tr>
               </thead>
               <tbody id="announcementsTableBody">
-                <tr><td colspan="6"><div class="empty-state"><i class="fas fa-inbox"></i><p>กำลังโหลด...</p></div></td></tr>
+                <tr>
+                  <td colspan="6">
+                    <div class="empty-state"><i class="fas fa-inbox"></i>
+                      <p>กำลังโหลด...</p>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -187,7 +232,13 @@
                 </tr>
               </thead>
               <tbody id="vehicleTableBody">
-                <tr><td colspan="9"><div class="empty-state"><i class="fas fa-inbox"></i><p>กำลังโหลด...</p></div></td></tr>
+                <tr>
+                  <td colspan="9">
+                    <div class="empty-state"><i class="fas fa-inbox"></i>
+                      <p>กำลังโหลด...</p>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -232,7 +283,8 @@
           </div>
           <div class="mb-3">
             <label class="form-label" style="color:var(--text-secondary)">แนบไฟล์ (PDF/รูปภาพ, สูงสุด 10MB)</label>
-            <input type="file" class="form-control" id="annFile" accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx">
+            <input type="file" class="form-control" id="annFile"
+              accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx">
             <input type="hidden" id="annFileURL">
           </div>
         </div>
@@ -306,4 +358,5 @@
   <!-- App JS -->
   <script src="js/app.js"></script>
 </body>
+
 </html>

@@ -435,6 +435,180 @@ const Dashboard = {
 };
 
 // ============================================================
+// 📅 CALENDAR MODULE
+// ============================================================
+const Calendar = {
+    currentDate: new Date(),
+    events: [],
+
+    THAI_MONTHS: [
+        'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน',
+        'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม',
+        'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+    ],
+    THAI_DAYS: ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'],
+
+    /** Load data from both modules and render calendar */
+    async load() {
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = '<div style="grid-column: span 7;"><div class="loading-spinner"><div class="spinner-border"></div></div></div>';
+
+        // Fetch both data sources in parallel
+        const [annResult, vehResult] = await Promise.all([
+            API.get({ action: 'getAnnouncements' }),
+            API.get({ action: 'getVehicleLogs' })
+        ]);
+
+        this.events = [];
+
+        if (annResult.success && annResult.data) {
+            annResult.data.forEach(item => {
+                if (item.Date) {
+                    this.events.push({
+                        type: 'announcement',
+                        date: item.Date,
+                        label: item.Title || 'ข่าว',
+                        id: item.ID,
+                        detail: item.Detail || '',
+                        postedBy: item.PostedBy || ''
+                    });
+                }
+            });
+        }
+
+        if (vehResult.success && vehResult.data) {
+            vehResult.data.forEach(item => {
+                if (item.Date) {
+                    this.events.push({
+                        type: 'vehicle',
+                        date: item.Date,
+                        label: `${item.CarLicense || 'รถ'} → ${item.Destination || ''}`,
+                        id: item.ID,
+                        driver: item.Driver || '',
+                        status: item.Status || ''
+                    });
+                }
+            });
+        }
+
+        this.render();
+    },
+
+    /** Render the calendar grid for currentDate month */
+    render() {
+        const year = this.currentDate.getFullYear();
+        const month = this.currentDate.getMonth();
+        const today = new Date();
+
+        // Update title (Thai Buddhist Era = +543)
+        const thaiYear = year + 543;
+        document.getElementById('calendarTitle').textContent =
+            `${this.THAI_MONTHS[month]} ${thaiYear}`;
+
+        const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+        // Build events map: 'YYYY-MM-DD' -> [events]
+        const eventsMap = {};
+        this.events.forEach(ev => {
+            const key = ev.date;
+            if (!eventsMap[key]) eventsMap[key] = [];
+            eventsMap[key].push(ev);
+        });
+
+        let html = '';
+
+        // Day names header
+        this.THAI_DAYS.forEach(d => {
+            html += `<div class="calendar-day-name">${d}</div>`;
+        });
+
+        // Previous month trailing days
+        for (let i = firstDay - 1; i >= 0; i--) {
+            const day = daysInPrevMonth - i;
+            html += `<div class="calendar-day other-month"><div class="day-number">${day}</div></div>`;
+        }
+
+        // Current month days
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+            const dayEvents = eventsMap[dateStr] || [];
+
+            let eventsHtml = '';
+            const maxShow = 3;
+            dayEvents.slice(0, maxShow).forEach(ev => {
+                const icon = ev.type === 'announcement' ? '📢' : '🚗';
+                eventsHtml += `<div class="calendar-event ${ev.type}" onclick="Calendar.showEvent(event, '${ev.type}', '${ev.id}')" title="${escapeHtml(ev.label)}">${icon} ${escapeHtml(ev.label)}</div>`;
+            });
+            if (dayEvents.length > maxShow) {
+                eventsHtml += `<div class="calendar-event-more">+${dayEvents.length - maxShow} เพิ่มเติม</div>`;
+            }
+
+            html += `<div class="calendar-day${isToday ? ' today' : ''}">
+                <div class="day-number">${d}</div>
+                ${eventsHtml}
+            </div>`;
+        }
+
+        // Next month leading days (fill to complete grid)
+        const totalCells = firstDay + daysInMonth;
+        const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+        for (let i = 1; i <= remaining; i++) {
+            html += `<div class="calendar-day other-month"><div class="day-number">${i}</div></div>`;
+        }
+
+        document.getElementById('calendarGrid').innerHTML = html;
+    },
+
+    /** Navigate to previous month */
+    prev() {
+        this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+        this.render();
+    },
+
+    /** Navigate to next month */
+    next() {
+        this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+        this.render();
+    },
+
+    /** Go back to today */
+    goToday() {
+        this.currentDate = new Date();
+        this.render();
+    },
+
+    /** Show event detail in modal */
+    showEvent(e, type, id) {
+        e.stopPropagation();
+        const ev = this.events.find(ev => ev.id === id && ev.type === type);
+        if (!ev) return;
+
+        if (type === 'announcement') {
+            document.getElementById('detailModalTitle').textContent = ev.label;
+            document.getElementById('detailModalBody').innerHTML = `
+                <p><strong>📅 วันที่:</strong> ${ev.date}</p>
+                <p><strong>👤 โพสต์โดย:</strong> ${ev.postedBy}</p>
+                <hr style="border-color: var(--border-color);">
+                <div class="detail-text">${escapeHtml(ev.detail || 'ไม่มีรายละเอียด')}</div>
+            `;
+        } else {
+            document.getElementById('detailModalTitle').textContent = '🚗 บันทึกการใช้รถ';
+            document.getElementById('detailModalBody').innerHTML = `
+                <p><strong>📅 วันที่:</strong> ${ev.date}</p>
+                <p><strong>🚗 รายละเอียด:</strong> ${escapeHtml(ev.label)}</p>
+                <p><strong>👤 พนักงานขับ:</strong> ${escapeHtml(ev.driver)}</p>
+                <p><strong>📌 สถานะ:</strong> <span class="badge-status badge-${(ev.status || '').toLowerCase()}">${escapeHtml(ev.status)}</span></p>
+            `;
+        }
+
+        new bootstrap.Modal(document.getElementById('detailModal')).show();
+    }
+};
+
+// ============================================================
 // 📁 FILE UPLOAD HELPER
 // ============================================================
 
@@ -513,6 +687,9 @@ function navigateTo(page) {
     switch (page) {
         case 'dashboard':
             Dashboard.load();
+            break;
+        case 'calendar':
+            Calendar.load();
             break;
         case 'announcements':
             Announcements.load();
