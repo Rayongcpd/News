@@ -623,7 +623,7 @@ const Calendar = {
                     html += `
                         <div class="list-group-item bg-transparent" style="border-bottom: 1px solid var(--border-color);">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <h6 class="mb-0 text-secondary-custom">🚗 ${escapeHtml(ev.label)}</h6> <!-- Label is CarLicense -->
+                                <h6 class="mb-0" style="color: #ffffff;">🚗 ${escapeHtml(ev.label)}</h6> <!-- Label is CarLicense -->
                                 <span class="badge-status badge-${(ev.status || '').toLowerCase()}">${escapeHtml(ev.status)}</span>
                             </div>
                              <p class="mb-1 small" style="color: #e0e0e0;"><i class="fas fa-map-marker-alt me-1"></i> ปลายทาง: ${escapeHtml(ev.destination || '')}</p>
