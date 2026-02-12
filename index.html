@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Office Management System — ระบบข่าวประชาสัมพันธ์และทะเบียนรถราชการ">
+  <title>Office Management System</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ============ TOAST CONTAINER ============ -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- ============ LOGIN SECTION ============ -->
+  <section id="loginSection">
+    <div class="login-card">
+      <div class="logo">
+        <i class="fas fa-building"></i>
+        <h2>Office Management</h2>
+        <p>ระบบจัดการสำนักงาน</p>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="loginUsername" placeholder="Username">
+        <label for="loginUsername"><i class="fas fa-user me-2"></i>Username</label>
+      </div>
+      <div class="form-floating mb-4">
+        <input type="password" class="form-control" id="loginPassword" placeholder="Password"
+               onkeydown="if(event.key==='Enter') Auth.login()">
+        <label for="loginPassword"><i class="fas fa-lock me-2"></i>Password</label>
+      </div>
+      <button id="loginBtn" class="btn btn-primary-custom w-100" onclick="Auth.login()">
+        <i class="fas fa-sign-in-alt me-2"></i>เข้าสู่ระบบ
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ APP SECTION ============ -->
+  <section id="appSection" style="display:none;">
+
+    <!-- Mobile Sidebar Toggle -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-brand">
+        <h4><i class="fas fa-building me-2"></i>OMS</h4>
+        <small>Office Management System</small>
+      </div>
+
+      <div class="sidebar-nav">
+        <div class="nav-item">
+          <a class="nav-link active" data-page="dashboard" onclick="navigateTo('dashboard')">
+            <i class="fas fa-th-large"></i> แดชบอร์ด
+          </a>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link" data-page="announcements" onclick="navigateTo('announcements')">
+            <i class="fas fa-bullhorn"></i> ข่าวประชาสัมพันธ์
+          </a>
+        </div>
+        <div class="nav-item">
+          <a class="nav-link" data-page="vehicles" onclick="navigateTo('vehicles')">
+            <i class="fas fa-car"></i> ทะเบียนรถราชการ
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">A</div>
+          <div class="user-detail">
+            <span id="userDisplayName">Admin</span>
+            <small id="userDisplayRole">Admin</small>
+          </div>
+        </div>
+        <a class="nav-link text-danger mt-2" onclick="Auth.logout()">
+          <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- ======== DASHBOARD PAGE ======== -->
+      <div id="page-dashboard" class="page-section active-page">
+        <div class="page-header">
+          <h3><i class="fas fa-th-large"></i>แดชบอร์ด</h3>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-md-4">
+            <div class="stat-card announcements">
+              <div class="stat-icon"><i class="fas fa-bullhorn"></i></div>
+              <div class="stat-value" id="statAnnouncements">0</div>
+              <div class="stat-label">ข่าวประชาสัมพันธ์ทั้งหมด</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card vehicles">
+              <div class="stat-icon"><i class="fas fa-car"></i></div>
+              <div class="stat-value" id="statVehicleLogs">0</div>
+              <div class="stat-label">บันทึกการใช้รถทั้งหมด</div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card active">
+              <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+              <div class="stat-value" id="statActiveVehicles">0</div>
+              <div class="stat-label">รถที่กำลังใช้งาน</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="data-card">
+          <div class="data-card-header">
+            <h5><i class="fas fa-clock me-2"></i>ข้อมูลสรุป</h5>
+          </div>
+          <div class="p-4">
+            <p style="color:var(--text-secondary);">ยินดีต้อนรับเข้าสู่ระบบจัดการสำนักงาน — เลือกเมนูด้านซ้ายเพื่อจัดการข้อมูล</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== ANNOUNCEMENTS PAGE ======== -->
+      <div id="page-announcements" class="page-section">
+        <div class="page-header">
+          <h3><i class="fas fa-bullhorn"></i>ข่าวประชาสัมพันธ์</h3>
+          <button class="btn btn-primary-custom admin-only" onclick="Announcements.showAdd()">
+            <i class="fas fa-plus me-2"></i>เพิ่มข่าวใหม่
+          </button>
+        </div>
+
+        <div class="data-card">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>วันที่</th>
+                  <th>หัวข้อ / รายละเอียด</th>
+                  <th>ไฟล์แนบ</th>
+                  <th>โพสต์โดย</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="announcementsTableBody">
+                <tr><td colspan="6"><div class="empty-state"><i class="fas fa-inbox"></i><p>กำลังโหลด...</p></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======== VEHICLE LOGS PAGE ======== -->
+      <div id="page-vehicles" class="page-section">
+        <div class="page-header">
+          <h3><i class="fas fa-car"></i>ทะเบียนรถราชการ</h3>
+          <button class="btn btn-primary-custom admin-only" onclick="VehicleLogs.showAdd()">
+            <i class="fas fa-plus me-2"></i>เพิ่มบันทึก
+          </button>
+        </div>
+
+        <div class="data-card">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>วันที่</th>
+                  <th>ทะเบียนรถ</th>
+                  <th>ปลายทาง</th>
+                  <th>เลขไมล์เริ่ม</th>
+                  <th>เลขไมล์สิ้นสุด</th>
+                  <th>พนักงานขับ</th>
+                  <th>สถานะ</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="vehicleTableBody">
+                <tr><td colspan="9"><div class="empty-state"><i class="fas fa-inbox"></i><p>กำลังโหลด...</p></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </section>
+
+  <!-- ============ MODALS ============ -->
+
+  <!-- Detail Modal -->
+  <div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailModalTitle">รายละเอียด</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="detailModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Announcement Form Modal -->
+  <div class="modal fade" id="annFormModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="annFormTitle">เพิ่มข่าวใหม่</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="annFormId">
+          <div class="mb-3">
+            <label class="form-label" style="color:var(--text-secondary)">หัวข้อข่าว *</label>
+            <input type="text" class="form-control" id="annTitle" placeholder="กรอกหัวข้อข่าว">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" style="color:var(--text-secondary)">รายละเอียด</label>
+            <textarea class="form-control" id="annDetail" rows="5" placeholder="กรอกรายละเอียดข่าว"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" style="color:var(--text-secondary)">แนบไฟล์ (PDF/รูปภาพ, สูงสุด 10MB)</label>
+            <input type="file" class="form-control" id="annFile" accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx">
+            <input type="hidden" id="annFileURL">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-primary-custom" onclick="Announcements.save()">
+            <i class="fas fa-save me-2"></i>บันทึก
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vehicle Log Form Modal -->
+  <div class="modal fade" id="vehFormModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="vehFormTitle">เพิ่มบันทึกการใช้รถ</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="vehFormId">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" style="color:var(--text-secondary)">วันที่ *</label>
+              <input type="date" class="form-control" id="vehDate">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" style="color:var(--text-secondary)">ทะเบียนรถ *</label>
+              <input type="text" class="form-control" id="vehCarLicense" placeholder="เช่น กข 1234">
+            </div>
+            <div class="col-md-12">
+              <label class="form-label" style="color:var(--text-secondary)">จุดหมายปลายทาง *</label>
+              <input type="text" class="form-control" id="vehDestination" placeholder="สถานที่ปลายทาง">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" style="color:var(--text-secondary)">เลขไมล์เริ่มต้น</label>
+              <input type="number" class="form-control" id="vehMileageStart" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" style="color:var(--text-secondary)">เลขไมล์สิ้นสุด</label>
+              <input type="number" class="form-control" id="vehMileageEnd" placeholder="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" style="color:var(--text-secondary)">พนักงานขับรถ *</label>
+              <input type="text" class="form-control" id="vehDriver" placeholder="ชื่อพนักงานขับรถ">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" style="color:var(--text-secondary)">สถานะ</label>
+              <select class="form-select" id="vehStatus">
+                <option value="Active">Active (กำลังใช้งาน)</option>
+                <option value="Completed">Completed (เสร็จสิ้น)</option>
+                <option value="Cancelled">Cancelled (ยกเลิก)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-primary-custom" onclick="VehicleLogs.save()">
+            <i class="fas fa-save me-2"></i>บันทึก
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- App JS -->
+  <script src="js/app.js"></script>
+</body>
+</html>
