@@ -448,6 +448,23 @@ const Calendar = {
     ],
     THAI_DAYS: ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'],
 
+    /** Normalize any date format to YYYY-MM-DD (Bangkok timezone) */
+    normalizeDate(dateVal) {
+        if (!dateVal) return '';
+        const str = String(dateVal);
+        // Already YYYY-MM-DD format
+        if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+        // Parse as date and format to Bangkok timezone
+        const d = new Date(str);
+        if (isNaN(d.getTime())) return str;
+        // Convert to Bangkok timezone (UTC+7)
+        const bangkok = new Date(d.getTime() + (7 * 60 * 60 * 1000));
+        const y = bangkok.getUTCFullYear();
+        const m = String(bangkok.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(bangkok.getUTCDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    },
+
     /** Load data from both modules and render calendar */
     async load() {
         const grid = document.getElementById('calendarGrid');
@@ -466,7 +483,7 @@ const Calendar = {
                 if (item.Date) {
                     this.events.push({
                         type: 'announcement',
-                        date: item.Date,
+                        date: this.normalizeDate(item.Date),
                         label: item.Title || 'ข่าว',
                         id: item.ID,
                         detail: item.Detail || '',
@@ -481,7 +498,7 @@ const Calendar = {
                 if (item.Date) {
                     this.events.push({
                         type: 'vehicle',
-                        date: item.Date,
+                        date: this.normalizeDate(item.Date),
                         label: `${item.CarLicense || 'รถ'} → ${item.Destination || ''}`,
                         id: item.ID,
                         driver: item.Driver || '',
