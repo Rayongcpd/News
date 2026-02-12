@@ -145,7 +145,21 @@ body::before {
     background: rgba(108, 99, 255, 0.05) !important;
 }
 
+
+.form-floating>.form-control {
+    padding-top: 1.625rem !important;
+    padding-bottom: 0.625rem !important;
+}
+
 .form-control::placeholder {
+    color: var(--text-muted) !important;
+}
+
+.form-floating>.form-control::placeholder {
+    color: transparent !important;
+}
+
+.form-floating>.form-control:focus::placeholder {
     color: var(--text-muted) !important;
 }
 
