@@ -528,12 +528,15 @@ const VehicleLogs = {
 
         document.getElementById('vehFormTitle').textContent = 'แก้ไขบันทึกการใช้รถ';
         document.getElementById('vehFormId').value = item.ID;
-        document.getElementById('vehDate').value = item.Date || '';
+        // Format date to YYYY-MM-DD for input[type="date"]
+        document.getElementById('vehDate').value = Calendar.normalizeDate(item.Date);
         document.getElementById('vehCarLicense').value = item.CarLicense || '';
         document.getElementById('vehDestination').value = item.Destination || '';
-        document.getElementById('vehRequestor').value = item.Requestor || '';
-        document.getElementById('vehDepartureTime').value = item.DepartureTime || '';
-        document.getElementById('vehReturnTime').value = item.ReturnTime || '';
+        // Handle potential case sensitivity or missing field
+        document.getElementById('vehRequestor').value = item.Requestor || item.requestor || '';
+        // Format time to HH:mm (remove seconds if present)
+        document.getElementById('vehDepartureTime').value = (item.DepartureTime || '').substring(0, 5);
+        document.getElementById('vehReturnTime').value = (item.ReturnTime || '').substring(0, 5);
         document.getElementById('vehMileageStart').value = item.MileageStart || '';
         document.getElementById('vehMileageEnd').value = item.MileageEnd || '';
         document.getElementById('vehDriver').value = item.Driver || '';
