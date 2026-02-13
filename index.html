@@ -114,6 +114,38 @@
         </div>
 
         <div class="data-card">
+          <!-- Filter Toolbar for Announcements -->
+          <div class="filter-toolbar mb-3 p-3 bg-light rounded border">
+            <div class="row g-2 align-items-end">
+              <div class="col-md-3">
+                <label class="form-label small text-muted">ประเภทการกรอง</label>
+                <select class="form-select form-select-sm" id="annFilterType"
+                  onchange="FilterUtils.updateInputs('ann')">
+                  <option value="all">ทั้งหมด (All)</option>
+                  <option value="daily">รายวัน (Daily)</option>
+                  <option value="monthly">รายเดือน (Monthly)</option>
+                  <option value="quarterly">รายไตรมาส (Quarterly)</option>
+                  <option value="yearly">รายปี (Yearly)</option>
+                </select>
+              </div>
+
+              <!-- Dynamic Inputs Container -->
+              <div class="col-md-6" id="annFilterInputs">
+                <!-- Inputs will be injected here by JS -->
+                <div class="text-muted small pt-2">เลือกประเภทการกรองเพื่อเริ่มต้น</div>
+              </div>
+
+              <div class="col-md-3 text-end">
+                <button class="btn btn-primary-custom btn-sm w-100 mb-1" onclick="Announcements.applyFilter()">
+                  <i class="fas fa-filter me-1"></i> กรองข้อมูล
+                </button>
+                <button class="btn btn-outline-secondary btn-sm w-100" onclick="Announcements.resetFilter()">
+                  <i class="fas fa-undo me-1"></i> รีเซ็ต
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="table-responsive">
             <table class="table">
               <thead>
@@ -150,6 +182,38 @@
         </div>
 
         <div class="data-card">
+          <!-- Filter Toolbar for Vehicle Logs -->
+          <div class="filter-toolbar mb-3 p-3 bg-light rounded border">
+            <div class="row g-2 align-items-end">
+              <div class="col-md-3">
+                <label class="form-label small text-muted">ประเภทการกรอง</label>
+                <select class="form-select form-select-sm" id="vehFilterType"
+                  onchange="FilterUtils.updateInputs('veh')">
+                  <option value="all">ทั้งหมด (All)</option>
+                  <option value="daily">รายวัน (Daily)</option>
+                  <option value="monthly">รายเดือน (Monthly)</option>
+                  <option value="quarterly">รายไตรมาส (Quarterly)</option>
+                  <option value="yearly">รายปี (Yearly)</option>
+                </select>
+              </div>
+
+              <!-- Dynamic Inputs Container -->
+              <div class="col-md-6" id="vehFilterInputs">
+                <!-- Inputs will be injected here by JS -->
+                <div class="text-muted small pt-2">เลือกประเภทการกรองเพื่อเริ่มต้น</div>
+              </div>
+
+              <div class="col-md-3 text-end">
+                <button class="btn btn-primary-custom btn-sm w-100 mb-1" onclick="VehicleLogs.applyFilter()">
+                  <i class="fas fa-filter me-1"></i> กรองข้อมูล
+                </button>
+                <button class="btn btn-outline-secondary btn-sm w-100" onclick="VehicleLogs.resetFilter()">
+                  <i class="fas fa-undo me-1"></i> รีเซ็ต
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="table-responsive">
             <table class="table">
               <thead>

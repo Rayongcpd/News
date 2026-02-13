@@ -175,6 +175,116 @@ const Auth = {
 // ============================================================
 // 📢 ANNOUNCEMENTS MODULE
 // ============================================================
+// ============================================================
+// 🔍 FILTER UTILS
+// ============================================================
+const FilterUtils = {
+    /** Generate HTML for filter inputs based on type */
+    updateInputs(prefix) {
+        const type = document.getElementById(`${prefix}FilterType`).value;
+        const container = document.getElementById(`${prefix}FilterInputs`);
+        let html = '';
+        const year = new Date().getFullYear();
+
+        switch (type) {
+            case 'daily':
+                html = `<input type="date" class="form-control form-control-sm" id="${prefix}FilterDate">`;
+                break;
+            case 'monthly':
+                html = `<input type="month" class="form-control form-control-sm" id="${prefix}FilterMonth">`;
+                break;
+            case 'quarterly':
+                html = `
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm" id="${prefix}FilterYear">
+                            ${this.generateYearOptions(year)}
+                        </select>
+                        <select class="form-select form-select-sm" id="${prefix}FilterQuarter">
+                            <option value="1">ไตรมาส 1 (ม.ค.-มี.ค.)</option>
+                            <option value="2">ไตรมาส 2 (เม.ย.-มิ.ย.)</option>
+                            <option value="3">ไตรมาส 3 (ก.ค.-ก.ย.)</option>
+                            <option value="4">ไตรมาส 4 (ต.ค.-ธ.ค.)</option>
+                        </select>
+                    </div>`;
+                break;
+            case 'yearly':
+                html = `
+                    <select class="form-select form-select-sm" id="${prefix}FilterYear">
+                        ${this.generateYearOptions(year)}
+                    </select>`;
+                break;
+            default: // all
+                html = `<div class="text-muted small pt-2">แสดงข้อมูลทั้งหมด</div>`;
+        }
+        container.innerHTML = html;
+    },
+
+    /** Generate year options (current year +/- 5) */
+    generateYearOptions(currentYear) {
+        let options = '';
+        for (let y = currentYear + 1; y >= currentYear - 5; y--) {
+            // Show Buddhist Era in text (Year + 543)
+            options += `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y + 543}</option>`;
+        }
+        return options;
+    },
+
+    /** Get filter criteria from inputs */
+    getCriteria(prefix) {
+        const type = document.getElementById(`${prefix}FilterType`).value;
+        const criteria = { type };
+
+        if (type === 'daily') {
+            criteria.date = document.getElementById(`${prefix}FilterDate`).value;
+        } else if (type === 'monthly') {
+            criteria.month = document.getElementById(`${prefix}FilterMonth`).value; // YYYY-MM
+        } else if (type === 'quarterly') {
+            criteria.year = document.getElementById(`${prefix}FilterYear`).value;
+            criteria.quarter = document.getElementById(`${prefix}FilterQuarter`).value;
+        } else if (type === 'yearly') {
+            criteria.year = document.getElementById(`${prefix}FilterYear`).value;
+        }
+        return criteria;
+    },
+
+    /** Filter data array based on criteria */
+    filterData(data, criteria) {
+        if (!data) return [];
+        if (criteria.type === 'all') return data;
+
+        return data.filter(item => {
+            if (!item.Date) return false;
+            // item.Date is likely YYYY-MM-DD string or ISO
+            // Normalize to YYYY-MM-DD
+            const itemDateStr = Calendar.normalizeDate(item.Date);
+            if (!itemDateStr) return false;
+
+            const [y, m, d] = itemDateStr.split('-').map(Number); // y=2024, m=2, d=15
+
+            switch (criteria.type) {
+                case 'daily':
+                    // criteria.date is YYYY-MM-DD
+                    if (!criteria.date) return true; // No date selected, show all? Or none? Let's show all or handle validation
+                    return itemDateStr === criteria.date;
+                case 'monthly':
+                    // criteria.month is YYYY-MM
+                    if (!criteria.month) return true;
+                    return itemDateStr.startsWith(criteria.month);
+                case 'quarterly':
+                    const q = Math.ceil(m / 3);
+                    return String(y) === String(criteria.year) && String(q) === String(criteria.quarter);
+                case 'yearly':
+                    return String(y) === String(criteria.year);
+                default:
+                    return true;
+            }
+        });
+    }
+};
+
+// ============================================================
+// 📢 ANNOUNCEMENTS MODULE
+// ============================================================
 const Announcements = {
     /** Fetch and render all announcements */
     async load() {
@@ -309,6 +419,20 @@ const Announcements = {
         }
     },
 
+    /** Apply filter */
+    applyFilter() {
+        const criteria = FilterUtils.getCriteria('ann');
+        const filtered = FilterUtils.filterData(AppState.announcements, criteria);
+        this.render(filtered);
+    },
+
+    /** Reset filter */
+    resetFilter() {
+        document.getElementById('annFilterType').value = 'all';
+        FilterUtils.updateInputs('ann');
+        this.render(AppState.announcements);
+    },
+
     /** Confirm and delete announcement */
     async confirmDelete(id) {
         if (!confirm('ต้องการลบข่าวนี้หรือไม่?')) return;
@@ -438,6 +562,20 @@ const VehicleLogs = {
         } else {
             showToast(result.error, 'error');
         }
+    },
+
+    /** Apply filter */
+    applyFilter() {
+        const criteria = FilterUtils.getCriteria('veh');
+        const filtered = FilterUtils.filterData(AppState.vehicleLogs, criteria);
+        this.render(filtered);
+    },
+
+    /** Reset filter */
+    resetFilter() {
+        document.getElementById('vehFilterType').value = 'all';
+        FilterUtils.updateInputs('veh');
+        this.render(AppState.vehicleLogs);
     },
 
     /** Confirm and delete vehicle log */
