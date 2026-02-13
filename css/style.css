@@ -1,32 +1,58 @@
 /* ============================================================
-   Office Management System — Premium Dark Theme
+   Office Management System — Theme Engine
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --bg-primary: #0f0f1a;
-    --bg-secondary: #1a1a2e;
-    --bg-card: rgba(30, 30, 60, 0.6);
-    --bg-glass: rgba(255, 255, 255, 0.05);
-    --text-primary: #e8e8f0;
-    --text-secondary: #a0a0c0;
-    --text-muted: #6c6c8a;
+    /* ============ LIGHT THEME (DEFAULT) ============ */
+    --bg-primary: #f0f2f5;
+    --bg-secondary: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-glass: rgba(255, 255, 255, 0.7);
+    --bg-hover: rgba(0, 0, 0, 0.05);
+    
+    --text-primary: #2c3e50;
+    --text-secondary: #596275;
+    --text-muted: #95a5a6;
+    --text-inverse: #ffffff;
+
     --accent-primary: #6c63ff;
     --accent-secondary: #ff6b9d;
     --accent-success: #2ecc71;
     --accent-warning: #f39c12;
     --accent-danger: #e74c3c;
     --accent-info: #3498db;
+
     --gradient-primary: linear-gradient(135deg, #6c63ff, #3b82f6);
     --gradient-secondary: linear-gradient(135deg, #ff6b9d, #c850c0);
     --gradient-success: linear-gradient(135deg, #2ecc71, #27ae60);
-    --border-color: rgba(255, 255, 255, 0.08);
-    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
-    --shadow-glow: 0 0 20px rgba(108, 99, 255, 0.15);
+
+    --border-color: #e1e4e8;
+    --shadow-soft: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --shadow-glow: 0 0 15px rgba(108, 99, 255, 0.1);
+    
     --radius: 16px;
     --radius-sm: 10px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
+    /* ============ DARK THEME ============ */
+    --bg-primary: #0f0f1a;
+    --bg-secondary: #1a1a2e;
+    --bg-card: rgba(30, 30, 60, 0.6);
+    --bg-glass: rgba(255, 255, 255, 0.05);
+    --bg-hover: rgba(108, 99, 255, 0.04);
+
+    --text-primary: #e8e8f0;
+    --text-secondary: #a0a0c0;
+    --text-muted: #6c6c8a;
+    --text-inverse: #ffffff;
+
+    --border-color: rgba(255, 255, 255, 0.08);
+    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --shadow-glow: 0 0 20px rgba(108, 99, 255, 0.15);
 }
 
 * {
@@ -41,6 +67,7 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* Background animated gradient */
@@ -56,22 +83,13 @@ body::before {
         radial-gradient(circle at 50% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
     animation: bgFloat 20s ease-in-out infinite;
     z-index: -1;
+    pointer-events: none;
 }
 
 @keyframes bgFloat {
-
-    0%,
-    100% {
-        transform: translate(0, 0) rotate(0deg);
-    }
-
-    33% {
-        transform: translate(20px, -30px) rotate(1deg);
-    }
-
-    66% {
-        transform: translate(-20px, 20px) rotate(-1deg);
-    }
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(20px, -30px) rotate(1deg); }
+    66% { transform: translate(-20px, 20px) rotate(-1deg); }
 }
 
 /* ============ LOGIN PAGE ============ */
@@ -86,6 +104,7 @@ body::before {
 .login-card {
     background: var(--bg-card);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     padding: 48px 40px;
@@ -142,13 +161,17 @@ body::before {
 .form-select:focus {
     border-color: var(--accent-primary) !important;
     box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.15) !important;
-    background: rgba(108, 99, 255, 0.05) !important;
+    background: var(--bg-secondary) !important;
 }
-
 
 .form-floating>.form-control {
     padding-top: 1.625rem !important;
     padding-bottom: 0.625rem !important;
+    height: 56px;
+}
+
+.login-card .form-floating>label {
+    padding: 16px;
 }
 
 .form-control::placeholder {
@@ -167,14 +190,6 @@ body::before {
     color: var(--text-muted) !important;
     font-family: 'Prompt', sans-serif !important;
     font-size: 14px !important;
-}
-
-.login-card .form-floating>.form-control {
-    height: 56px;
-}
-
-.login-card .form-floating>label {
-    padding: 16px;
 }
 
 /* ============ BUTTONS ============ */
@@ -224,7 +239,7 @@ body::before {
 }
 
 .btn-outline-custom:hover {
-    background: var(--bg-glass);
+    background: var(--bg-hover);
     border-color: var(--accent-primary);
     color: var(--accent-primary);
 }
@@ -293,7 +308,7 @@ body::before {
 }
 
 .nav-link:hover {
-    background: var(--bg-glass);
+    background: var(--bg-hover);
     color: var(--text-primary);
 }
 
@@ -345,6 +360,87 @@ body::before {
     display: block;
 }
 
+/* ============ THEME TOGGLE ============ */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 0 16px;
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 34px;
+    position: relative;
+    width: 60px;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.slider {
+    background-color: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    background-color: var(--accent-primary);
+    bottom: 4px;
+    content: "";
+    height: 24px;
+    left: 4px;
+    position: absolute;
+    transition: .4s;
+    width: 24px;
+    border-radius: 50%;
+}
+
+.slider .fa-sun {
+    position: absolute;
+    left: 8px;
+    top: 9px;
+    font-size: 14px;
+    color: #f39c12;
+    opacity: 0;
+    transition: .4s;
+}
+
+.slider .fa-moon {
+    position: absolute;
+    right: 9px;
+    top: 9px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    opacity: 1;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: var(--bg-secondary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+input:checked + .slider .fa-sun {
+    opacity: 1;
+}
+
+input:checked + .slider .fa-moon {
+    opacity: 0;
+}
+
 /* ============ MAIN CONTENT ============ */
 .main-content {
     margin-left: 260px;
@@ -375,6 +471,7 @@ body::before {
 .stat-card {
     background: var(--bg-card);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     padding: 24px;
@@ -392,17 +489,9 @@ body::before {
     height: 3px;
 }
 
-.stat-card.announcements::before {
-    background: var(--gradient-primary);
-}
-
-.stat-card.vehicles::before {
-    background: var(--gradient-secondary);
-}
-
-.stat-card.active::before {
-    background: var(--gradient-success);
-}
+.stat-card.announcements::before { background: var(--gradient-primary); }
+.stat-card.vehicles::before { background: var(--gradient-secondary); }
+.stat-card.active::before { background: var(--gradient-success); }
 
 .stat-card:hover {
     transform: translateY(-4px);
@@ -451,22 +540,15 @@ body::before {
 .data-card {
     background: var(--bg-card);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
     overflow: hidden;
 }
 
-.data-card-header {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.data-card-header h5 {
-    font-size: 16px;
-    font-weight: 600;
+.filter-toolbar {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
 }
 
 .table {
@@ -498,7 +580,7 @@ body::before {
 }
 
 .table tbody tr:hover {
-    background: rgba(108, 99, 255, 0.04);
+    background: var(--bg-hover);
 }
 
 .table tbody tr:last-child td {
@@ -556,7 +638,13 @@ body::before {
 }
 
 .btn-close {
-    filter: invert(1) !important;
+    /* Auto invert filter based on theme using css var? Bootstrap uses SVG */
+    /* We can filter it manually */
+    filter: invert(0.5); 
+}
+
+[data-theme="dark"] .btn-close {
+    filter: invert(1);
 }
 
 /* ============ EMPTY STATE ============ */
@@ -626,17 +714,9 @@ body::before {
     min-width: 280px;
 }
 
-.toast-custom.success {
-    border-left: 4px solid var(--accent-success);
-}
-
-.toast-custom.error {
-    border-left: 4px solid var(--accent-danger);
-}
-
-.toast-custom.info {
-    border-left: 4px solid var(--accent-info);
-}
+.toast-custom.success { border-left: 4px solid var(--accent-success); }
+.toast-custom.error { border-left: 4px solid var(--accent-danger); }
+.toast-custom.info { border-left: 4px solid var(--accent-info); }
 
 /* ============ SCROLLBAR ============ */
 ::-webkit-scrollbar {
@@ -658,27 +738,13 @@ body::before {
 
 /* ============ ANIMATIONS ============ */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(40px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 .fade-in {
@@ -701,58 +767,18 @@ body::before {
 }
 
 @media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-
-    .sidebar.show {
-        transform: translateX(0);
-    }
-
-    .main-content {
-        margin-left: 0;
-        padding: 24px 16px;
-        padding-top: 64px;
-    }
-
-    .sidebar-toggle {
-        display: block;
-    }
-
-    .page-header h3 {
-        font-size: 20px;
-    }
-
-    .stat-card .stat-value {
-        font-size: 24px;
-    }
-
-    .calendar-day {
-        min-height: 60px;
-        padding: 4px;
-    }
-
-    .calendar-day .day-number {
-        font-size: 11px;
-    }
-
-    .calendar-event {
-        font-size: 9px;
-        padding: 1px 3px;
-    }
-
-    .calendar-header {
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 12px 16px;
-    }
-
-    .calendar-header h4 {
-        font-size: 15px;
-        order: -1;
-        flex-basis: 100%;
-        text-align: center;
-    }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.show { transform: translateX(0); }
+    .main-content { margin-left: 0; padding: 24px 16px; padding-top: 64px; }
+    .sidebar-toggle { display: block; }
+    .page-header h3 { font-size: 20px; }
+    .stat-card .stat-value { font-size: 24px; }
+    
+    .calendar-day { min-height: 60px; padding: 4px; }
+    .calendar-day .day-number { font-size: 11px; }
+    .calendar-event { font-size: 9px; padding: 1px 3px; }
+    .calendar-header { flex-wrap: wrap; gap: 8px; padding: 12px 16px; }
+    .calendar-header h4 { font-size: 15px; order: -1; flex-basis: 100%; text-align: center; }
 }
 
 /* ============ CALENDAR ============ */
@@ -797,13 +823,8 @@ body::before {
     flex-shrink: 0;
 }
 
-.legend-dot.announcement {
-    background: var(--accent-primary);
-}
-
-.legend-dot.vehicle {
-    background: var(--accent-secondary);
-}
+.legend-dot.announcement { background: var(--accent-primary); }
+.legend-dot.vehicle { background: var(--accent-secondary); }
 
 .calendar-grid {
     display: grid;
@@ -821,9 +842,7 @@ body::before {
     letter-spacing: 0.5px;
 }
 
-.calendar-day-name:first-child {
-    color: var(--accent-danger);
-}
+.calendar-day-name:first-child { color: var(--accent-danger); }
 
 .calendar-day {
     min-height: 100px;
@@ -834,11 +853,12 @@ body::before {
     transition: var(--transition);
     cursor: default;
     position: relative;
+    background: var(--bg-card);
 }
 
 .calendar-day:hover {
-    background: rgba(108, 99, 255, 0.06);
-    border-color: rgba(108, 99, 255, 0.2);
+    background: var(--bg-hover);
+    border-color: var(--accent-primary);
 }
 
 .calendar-day .day-number {
@@ -849,7 +869,8 @@ body::before {
 }
 
 .calendar-day.today {
-    background: rgba(108, 99, 255, 0.08);
+    background: rgba(108, 99, 255, 0.08); /* This is okay for both modes or needs var */
+    background: var(--bg-hover);
     border-color: var(--accent-primary);
 }
 
@@ -866,7 +887,8 @@ body::before {
 }
 
 .calendar-day.other-month {
-    opacity: 0.3;
+    opacity: 0.4;
+    background: transparent;
 }
 
 .calendar-day.other-month:hover {
@@ -884,53 +906,39 @@ body::before {
     text-overflow: ellipsis;
     cursor: pointer;
     transition: var(--transition);
+    color: #fff !important; /* Always white text for badges */
 }
 
 .calendar-event:hover {
-    filter: brightness(1.2);
+    filter: brightness(1.1);
     transform: translateX(2px);
 }
 
 .calendar-event.announcement {
-    background: rgba(108, 99, 255, 0.2);
-    color: #a29bff;
-    border-left: 2px solid var(--accent-primary);
+    background: rgba(108, 99, 255, 0.8);
+    background: var(--accent-primary);
+    border-left: 3px solid rgba(255, 255, 255, 0.5);
 }
 
 .calendar-event.vehicle {
-    background: rgba(255, 107, 157, 0.2);
-    color: #ff9ec0;
-    border-left: 2px solid var(--accent-secondary);
-}
-
-.calendar-event-more {
-    font-size: 10px;
-    color: var(--text-muted);
-    padding: 1px 6px;
-    cursor: pointer;
-}
-
-.calendar-event-more:hover {
-    color: var(--accent-primary);
+    background: rgba(255, 107, 157, 0.8);
+    background: var(--accent-secondary);
+    border-left: 3px solid rgba(255, 255, 255, 0.5);
 }
 
 /* ============ SECTION PAGES ============ */
-.page-section {
-    display: none;
-}
-
-.page-section.active-page {
-    display: block;
-}
+.page-section { display: none; }
+.page-section.active-page { display: block; }
 
 /* ============ DETAIL MODAL TEXT ============ */
 .detail-text {
     white-space: pre-wrap;
     word-wrap: break-word;
-    background: var(--bg-glass);
+    background: var(--bg-hover);
     padding: 16px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
     max-height: 300px;
     overflow-y: auto;
+    color: var(--text-primary);
 }

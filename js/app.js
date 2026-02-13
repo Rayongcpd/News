@@ -49,6 +49,7 @@ const AppState = {
     /** Initialize App */
     init() {
         this.loadUser();
+        ThemeModule.init();
         showApp();
     }
 };
@@ -787,21 +788,21 @@ const Calendar = {
             groupEvents.forEach(ev => {
                 if (type === 'announcement') {
                     html += `
-                        <div class="list-group-item bg-transparent" style="border-bottom: 1px solid var(--border-color);">
-                            <h6 class="mb-1" style="color: #ffffff;">${escapeHtml(ev.label)}</h6>
-                            <p class="mb-1 small" style="color: #e0e0e0;">${escapeHtml(ev.detail || 'ไม่มีรายละเอียด')}</p>
-                            <small style="color: #b0b0b0;"><i class="fas fa-user me-1"></i> ${escapeHtml(ev.postedBy)}</small>
+                        <div class="list-group-item bg-transparent border-bottom">
+                            <h6 class="mb-1 text-primary">${escapeHtml(ev.label)}</h6>
+                            <p class="mb-1 small text-secondary">${escapeHtml(ev.detail || 'ไม่มีรายละเอียด')}</p>
+                            <small class="text-muted"><i class="fas fa-user me-1"></i> ${escapeHtml(ev.postedBy)}</small>
                         </div>
                     `;
                 } else {
                     html += `
-                        <div class="list-group-item bg-transparent" style="border-bottom: 1px solid var(--border-color);">
+                        <div class="list-group-item bg-transparent border-bottom">
                             <div class="d-flex justify-content-between align-items-center mb-1">
-                                <h6 class="mb-0" style="color: #ffffff;">🚗 ${escapeHtml(ev.label)}</h6> <!-- Label is CarLicense -->
+                                <h6 class="mb-0 text-primary">🚗 ${escapeHtml(ev.label)}</h6> <!-- Label is CarLicense -->
                                 <span class="badge-status badge-${(ev.status || '').toLowerCase()}">${escapeHtml(ev.status)}</span>
                             </div>
-                             <p class="mb-1 small" style="color: #e0e0e0;"><i class="fas fa-map-marker-alt me-1"></i> ปลายทาง: ${escapeHtml(ev.destination || '')}</p>
-                            <small style="color: #b0b0b0;"><i class="fas fa-id-card me-1"></i> พนักงานขับ: ${escapeHtml(ev.driver)}</small>
+                             <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> ปลายทาง: ${escapeHtml(ev.destination || '')}</p>
+                            <small class="text-muted"><i class="fas fa-id-card me-1"></i> พนักงานขับ: ${escapeHtml(ev.driver)}</small>
                         </div>
                     `;
                 }
@@ -1004,12 +1005,41 @@ function formatNumber(n) {
 }
 
 // ============================================================
-// 🚀 APP INIT
+// 🌓 THEME MODULE
 // ============================================================
-document.addEventListener('DOMContentLoaded', () => {
-    if (AppState.loadUser()) {
-        showApp();
-    } else {
-        showLogin();
+const ThemeModule = {
+    init() {
+        const savedTheme = localStorage.getItem('oms-theme');
+        // If no saved theme, default to 'light' (which is default in CSS, so NO data-theme attribute)
+        // If saved is 'dark', apply it.
+        if (savedTheme === 'dark') {
+            this.apply('dark');
+        } else {
+            this.apply('light');
+        }
+    },
+
+    toggle() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const target = current === 'dark' ? 'light' : 'dark';
+        this.apply(target);
+    },
+
+    apply(theme) {
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            const checkbox = document.getElementById('checkbox');
+            if (checkbox) checkbox.checked = true;
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            const checkbox = document.getElementById('checkbox');
+            if (checkbox) checkbox.checked = false;
+        }
+        localStorage.setItem('oms-theme', theme);
     }
-});
+};
+
+/** Global toggle function */
+function toggleTheme() {
+    ThemeModule.toggle();
+}
