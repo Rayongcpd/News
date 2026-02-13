@@ -555,8 +555,8 @@ const VehicleLogs = {
         const driver = document.getElementById('vehDriver').value.trim();
         const status = document.getElementById('vehStatus').value;
 
-        if (!date || !carLicense || !destination || !requestor || !driver) {
-            showToast('กรุณากรอกข้อมูลที่จำเป็น', 'error');
+        if (!date || !destination || !requestor) {
+            showToast('กรุณากรอกข้อมูลที่จำเป็น (วันที่, ปลายทาง, ผู้ขอ)', 'error');
             return;
         }
 
