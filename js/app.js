@@ -837,18 +837,17 @@ const Calendar = {
                 } else {
                     html += `
                         <div class="list-group-item bg-transparent border-bottom">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <h6 class="mb-0 text-primary">🚗 ${escapeHtml(ev.label)}</h6> <!-- Label is CarLicense -->
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0 text-primary">🚗 ${escapeHtml(ev.label)} <span class="text-muted fw-normal" style="font-size:0.85em;">+ ${escapeHtml(ev.driver || '-')}</span></h6>
                                 <span class="badge-status badge-${(ev.status || '').toLowerCase()}">${escapeHtml(ev.status)}</span>
                             </div>
-                            <p class="mb-1 small text-secondary"><i class="fas fa-bullseye me-1"></i> จุดประสงค์: ${escapeHtml(ev.purpose || '-')}</p>
-                            <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> ปลายทาง: ${escapeHtml(ev.destination || '')}</p>
-                            <p class="mb-1 small text-secondary"><i class="fas fa-user-tag me-1"></i> ผู้ขอ: ${escapeHtml(ev.requestor || '-')}</p>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-user-tag me-1"></i> ผู้ขอใช้รถ : ${escapeHtml(ev.requestor || '-')}</p>
                             <div class="d-flex gap-3 mb-1 small text-secondary">
-                                <span><i class="fas fa-clock me-1"></i> ไป: ${formatTime(ev.departureTime)}</span>
-                                <span><i class="fas fa-clock me-1"></i> กลับ: ${formatTime(ev.returnTime)}</span>
+                                <span><i class="fas fa-clock me-1"></i> เวลาไป : ${formatTime(ev.departureTime)}</span>
+                                <span><i class="fas fa-clock me-1"></i> เวลากลับ : ${formatTime(ev.returnTime)}</span>
                             </div>
-                            <small class="text-muted"><i class="fas fa-id-card me-1"></i> พนักงานขับ: ${escapeHtml(ev.driver)}</small>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> สถานที่ : ${escapeHtml(ev.destination || '-')}</p>
+                            <p class="mb-0 small text-secondary"><i class="fas fa-bullseye me-1"></i> เพื่อ : ${escapeHtml(ev.purpose || '-')}</p>
                         </div>
                     `;
                 }
