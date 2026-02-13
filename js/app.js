@@ -482,8 +482,8 @@ const VehicleLogs = {
       <tr class="fade-in" style="animation-delay: ${index * 0.05}s">
         <td data-label="#"><span style="color: var(--text-muted); font-size: 12px;">${index + 1}</span></td>
         <td data-label="วันที่">${formatThaiDate(item.Date)}</td>
-        <td data-label="เวลาไป">${item.DepartureTime || '-'}</td>
-        <td data-label="เวลากลับ">${item.ReturnTime || '-'}</td>
+        <td data-label="เวลาไป">${formatTime(item.DepartureTime)}</td>
+        <td data-label="เวลากลับ">${formatTime(item.ReturnTime)}</td>
         <td data-label="ทะเบียนรถ"><strong>${escapeHtml(item.CarLicense || '')}</strong></td>
         <td data-label="ปลายทาง">${escapeHtml(item.Destination || '')}</td>
         <td data-label="เลขไมล์เริ่ม" class="text-end">${formatNumber(item.MileageStart)}</td>
@@ -819,8 +819,8 @@ const Calendar = {
                             </div>
                             <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> ปลายทาง: ${escapeHtml(ev.destination || '')}</p>
                             <div class="d-flex gap-3 mb-1 small text-secondary">
-                                <span><i class="fas fa-clock me-1"></i> ไป: ${ev.departureTime || '-'}</span>
-                                <span><i class="fas fa-clock me-1"></i> กลับ: ${ev.returnTime || '-'}</span>
+                                <span><i class="fas fa-clock me-1"></i> ไป: ${formatTime(ev.departureTime)}</span>
+                                <span><i class="fas fa-clock me-1"></i> กลับ: ${formatTime(ev.returnTime)}</span>
                             </div>
                             <small class="text-muted"><i class="fas fa-id-card me-1"></i> พนักงานขับ: ${escapeHtml(ev.driver)}</small>
                         </div>
@@ -1044,6 +1044,34 @@ function formatThaiDate(dateVal) {
     const thaiYear = y + 543;
 
     return `${d} ${months[m - 1]} ${thaiYear}`;
+}
+
+/** 
+ * Format time string to HH:mm
+ * Handles ISO strings (2024-02-16T10:00:00.000Z) or simple HH:mm:ss
+ */
+function formatTime(timeVal) {
+    if (!timeVal) return '-';
+
+    // If it's a full date string (like 1899-12-30T...)
+    if (String(timeVal).includes('T')) {
+        const d = new Date(timeVal);
+        if (isNaN(d.getTime())) return '-';
+        // Adjust for timezone if needed, or just take UTC hours/min if coming from sheet as formatted
+        // Google Sheets often sends 1899-12-30T... for time-only cells adjusted to script timezone
+        // Let's assume the time part is correct in local time if standard string, 
+        // or just parse simple HH:mm if it fits
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
+    // If it's already HH:mm:ss
+    if (String(timeVal).includes(':')) {
+        return String(timeVal).substring(0, 5);
+    }
+
+    return timeVal;
 }
 
 // ============================================================
