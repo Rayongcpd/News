@@ -501,6 +501,7 @@ const VehicleLogs = {
         <td data-label="เวลาไป">${formatTime(item.DepartureTime)}</td>
         <td data-label="เวลากลับ">${formatTime(item.ReturnTime)}</td>
         <td data-label="ทะเบียนรถ"><strong>${escapeHtml(item.CarLicense || '')}</strong></td>
+        <td data-label="จุดประสงค์">${escapeHtml(item.Purpose || '-')}</td>
         <td data-label="ปลายทาง">${escapeHtml(item.Destination || '')}</td>
         <td data-label="ผู้ขอใช้/กลุ่มงาน">${escapeHtml(item.Requestor || item.requestor || '-')}</td>
         <td data-label="เลขไมล์เริ่ม" class="text-end">${formatNumber(item.MileageStart)}</td>
@@ -527,6 +528,7 @@ const VehicleLogs = {
         document.getElementById('vehFormId').value = '';
         document.getElementById('vehDate').value = new Date().toISOString().split('T')[0];
         document.getElementById('vehCarLicense').value = '';
+        document.getElementById('vehPurpose').value = '';
         document.getElementById('vehDestination').value = '';
         document.getElementById('vehRequestor').value = '';
         document.getElementById('vehDepartureTime').value = '';
@@ -548,6 +550,7 @@ const VehicleLogs = {
         // Format date to YYYY-MM-DD for input[type="date"]
         document.getElementById('vehDate').value = Calendar.normalizeDate(item.Date);
         document.getElementById('vehCarLicense').value = item.CarLicense || '';
+        document.getElementById('vehPurpose').value = item.Purpose || '';
         document.getElementById('vehDestination').value = item.Destination || '';
         // Handle potential case sensitivity or missing field
         document.getElementById('vehRequestor').value = item.Requestor || item.requestor || '';
@@ -566,6 +569,7 @@ const VehicleLogs = {
         const id = document.getElementById('vehFormId').value;
         const date = document.getElementById('vehDate').value;
         const carLicense = document.getElementById('vehCarLicense').value.trim();
+        const purpose = document.getElementById('vehPurpose').value.trim();
         const destination = document.getElementById('vehDestination').value.trim();
         const requestor = document.getElementById('vehRequestor').value.trim();
         const departureTime = document.getElementById('vehDepartureTime').value;
@@ -575,13 +579,13 @@ const VehicleLogs = {
         const driver = document.getElementById('vehDriver').value.trim();
         const status = document.getElementById('vehStatus').value;
 
-        if (!date || !destination || !requestor) {
-            showToast('กรุณากรอกข้อมูลที่จำเป็น (วันที่, ปลายทาง, ผู้ขอ)', 'error');
+        if (!date || !destination || !requestor || !purpose) {
+            showToast('กรุณากรอกข้อมูลที่จำเป็น (วันที่, จุดประสงค์, ปลายทาง, ผู้ขอ)', 'error');
             return;
         }
 
         const action = id ? 'updateVehicleLog' : 'addVehicleLog';
-        const payload = { action, date, carLicense, destination, requestor, departureTime, returnTime, mileageStart, mileageEnd, driver, status };
+        const payload = { action, date, carLicense, purpose, destination, requestor, departureTime, returnTime, mileageStart, mileageEnd, driver, status };
         if (id) payload.id = id;
 
         const result = await API.post(payload);
@@ -698,6 +702,7 @@ const Calendar = {
                         id: item.ID,
                         driver: item.Driver || '',
                         status: item.Status || '',
+                        purpose: item.Purpose || '',
                         destination: item.Destination || '',
                         requestor: item.Requestor || item.requestor || '',
                         departureTime: item.DepartureTime || '',
@@ -836,6 +841,7 @@ const Calendar = {
                                 <h6 class="mb-0 text-primary">🚗 ${escapeHtml(ev.label)}</h6> <!-- Label is CarLicense -->
                                 <span class="badge-status badge-${(ev.status || '').toLowerCase()}">${escapeHtml(ev.status)}</span>
                             </div>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-bullseye me-1"></i> จุดประสงค์: ${escapeHtml(ev.purpose || '-')}</p>
                             <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> ปลายทาง: ${escapeHtml(ev.destination || '')}</p>
                             <p class="mb-1 small text-secondary"><i class="fas fa-user-tag me-1"></i> ผู้ขอ: ${escapeHtml(ev.requestor || '-')}</p>
                             <div class="d-flex gap-3 mb-1 small text-secondary">
