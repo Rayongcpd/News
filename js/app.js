@@ -44,8 +44,17 @@ const AppState = {
     /** Check if user is Admin */
     isAdmin() {
         return this.user && this.user.role === 'Admin';
+    },
+
+    /** Initialize App */
+    init() {
+        this.loadUser();
+        showApp();
     }
 };
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => AppState.init());
 
 // ============================================================
 // 📡 API SERVICE
@@ -97,7 +106,27 @@ const API = {
 // ============================================================
 // 🔐 AUTH MODULE
 // ============================================================
+// ============================================================
+// 🔐 AUTH MODULE
+// ============================================================
 const Auth = {
+    /** Show Login Modal */
+    showLoginModal() {
+        // Reset form
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+        new bootstrap.Modal(document.getElementById('loginModal')).show();
+    },
+
+    /** Handle login/logout click */
+    checkAuthAction() {
+        if (AppState.user) {
+            this.logout();
+        } else {
+            this.showLoginModal();
+        }
+    },
+
     /** Handle login form submission */
     async login() {
         const username = document.getElementById('loginUsername').value.trim();
@@ -110,7 +139,7 @@ const Auth = {
 
         const loginBtn = document.getElementById('loginBtn');
         loginBtn.disabled = true;
-        loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังเข้าสู่ระบบ...';
+        loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังตรวจสอบ...';
 
         const result = await API.get({ action: 'login', username, password });
 
@@ -119,6 +148,12 @@ const Auth = {
             result.password = password;
             AppState.saveUser(result);
             showToast(`ยินดีต้อนรับ, ${result.name}!`, 'success');
+
+            // Hide modal
+            const modalEl = document.getElementById('loginModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+
             showApp();
         } else {
             showToast(result.error || 'เข้าสู่ระบบไม่สำเร็จ', 'error');
@@ -130,8 +165,9 @@ const Auth = {
 
     /** Handle logout */
     logout() {
+        if (!confirm('ยืนยันการออกจากระบบ?')) return;
         AppState.clearUser();
-        showLogin();
+        showApp(); // Refresh as guest
         showToast('ออกจากระบบแล้ว', 'info');
     }
 };
@@ -678,30 +714,62 @@ async function uploadFile(file) {
 // 🎨 UI HELPERS
 // ============================================================
 
-/** Show login section, hide app */
-function showLogin() {
-    document.getElementById('loginSection').style.display = 'flex';
-    document.getElementById('appSection').style.display = 'none';
-}
+// ============================================================
+// 🎨 UI HELPERS
+// ============================================================
 
-/** Show app section, hide login */
+/** Show app section and update UI based on auth state */
 function showApp() {
-    document.getElementById('loginSection').style.display = 'none';
+    // Show app section (it should be visible by default, but ensuring here)
     document.getElementById('appSection').style.display = 'flex';
 
-    // Update user info in sidebar
     const user = AppState.user;
-    document.getElementById('userDisplayName').textContent = user.name;
-    document.getElementById('userDisplayRole').textContent = user.role;
-    document.getElementById('userAvatar').textContent = (user.name || 'U').charAt(0);
+    const authLink = document.getElementById('authMenuLink');
+    const authIcon = authLink.querySelector('i');
 
-    // Show/hide admin elements
-    document.querySelectorAll('.admin-only').forEach(el => {
-        el.style.display = AppState.isAdmin() ? '' : 'none';
-    });
+    if (user) {
+        // Logged In
+        document.getElementById('userDisplayName').textContent = user.name;
+        document.getElementById('userDisplayRole').textContent = user.role;
+        document.getElementById('userAvatar').textContent = (user.name || 'U').charAt(0);
+        document.getElementById('userAvatar').innerHTML = (user.name || 'U').charAt(0); // Text avatar
 
-    // Navigate to dashboard
-    navigateTo('calendar');
+        // Update Auth Link to Logout (Red)
+        authLink.className = 'nav-link text-danger mt-2';
+        authLink.innerHTML = '<i class="fas fa-sign-out-alt"></i> ออกจากระบบ';
+
+        // Show Admin Only Elements
+        document.querySelectorAll('.admin-only').forEach(el => {
+            el.style.display = AppState.isAdmin() ? 'inline-block' : 'none';
+        });
+
+    } else {
+        // Guest
+        document.getElementById('userDisplayName').textContent = 'ผู้เยี่ยมชม';
+        document.getElementById('userDisplayRole').textContent = 'บุคคลทั่วไป';
+        document.getElementById('userAvatar').innerHTML = '<i class="fas fa-user"></i>';
+
+        // Update Auth Link to Login (Normal)
+        authLink.className = 'nav-link mt-2';
+        authLink.innerHTML = '<i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ';
+
+        // Hide Admin Only Elements
+        document.querySelectorAll('.admin-only').forEach(el => {
+            el.style.display = 'none';
+        });
+    }
+
+    // Refresh current view if we are already viewing data
+    const activePage = document.querySelector('.page-section.active-page');
+    if (activePage) {
+        // If we just logged in/out, re-render the current list to show/hide action buttons
+        const pageId = activePage.id.replace('page-', '');
+        if (pageId === 'announcements') Announcements.render(AppState.announcements);
+        if (pageId === 'vehicles') VehicleLogs.render(AppState.vehicleLogs);
+    } else {
+        // Default to calendar
+        navigateTo('calendar');
+    }
 }
 
 /** Navigate between pages */

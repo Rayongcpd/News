@@ -22,30 +22,8 @@
   <div id="toastContainer" class="toast-container"></div>
 
   <!-- ============ LOGIN SECTION ============ -->
-  <section id="loginSection">
-    <div class="login-card">
-      <div class="logo">
-        <i class="fas fa-building"></i>
-        <h2>Office Management</h2>
-        <p>ระบบจัดการสำนักงาน</p>
-      </div>
-      <div class="form-floating mb-3">
-        <input type="text" class="form-control" id="loginUsername" placeholder="Username">
-        <label for="loginUsername"><i class="fas fa-user me-2"></i>Username</label>
-      </div>
-      <div class="form-floating mb-4">
-        <input type="password" class="form-control" id="loginPassword" placeholder="Password"
-          onkeydown="if(event.key==='Enter') Auth.login()">
-        <label for="loginPassword"><i class="fas fa-lock me-2"></i>Password</label>
-      </div>
-      <button id="loginBtn" class="btn btn-primary-custom w-100" onclick="Auth.login()">
-        <i class="fas fa-sign-in-alt me-2"></i>เข้าสู่ระบบ
-      </button>
-    </div>
-  </section>
-
-  <!-- ============ APP SECTION ============ -->
-  <section id="appSection" style="display:none;">
+  <!-- ============ APP SECTION (Visible by Default) ============ -->
+  <section id="appSection">
 
     <!-- Mobile Sidebar Toggle -->
     <button class="sidebar-toggle" onclick="toggleSidebar()">
@@ -79,14 +57,14 @@
 
       <div class="sidebar-footer">
         <div class="user-info">
-          <div class="user-avatar" id="userAvatar">A</div>
+          <div class="user-avatar" id="userAvatar"><i class="fas fa-user"></i></div>
           <div class="user-detail">
-            <span id="userDisplayName">Admin</span>
-            <small id="userDisplayRole">Admin</small>
+            <span id="userDisplayName">ผู้เยี่ยมชม</span>
+            <small id="userDisplayRole">บุคคลทั่วไป</small>
           </div>
         </div>
-        <a class="nav-link text-danger mt-2" onclick="Auth.logout()">
-          <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+        <a id="authMenuLink" class="nav-link mt-2" onclick="Auth.checkAuthAction()">
+          <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
         </a>
       </div>
     </nav>
@@ -205,6 +183,32 @@
   </section>
 
   <!-- ============ MODALS ============ -->
+
+  <!-- Login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title"><i class="fas fa-lock me-2"></i>เข้าสู่ระบบเจ้าหน้าที่</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="loginUsername" placeholder="Username">
+            <label for="loginUsername"><i class="fas fa-user me-2"></i>Username</label>
+          </div>
+          <div class="form-floating mb-4">
+            <input type="password" class="form-control" id="loginPassword" placeholder="Password"
+              onkeydown="if(event.key==='Enter') Auth.login()">
+            <label for="loginPassword"><i class="fas fa-lock me-2"></i>Password</label>
+          </div>
+          <button id="loginBtn" class="btn btn-primary-custom w-100" onclick="Auth.login()">
+            <i class="fas fa-sign-in-alt me-2"></i>เข้าสู่ระบบ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Detail Modal -->
   <div class="modal fade" id="detailModal" tabindex="-1">
