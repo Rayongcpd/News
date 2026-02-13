@@ -552,9 +552,9 @@ const VehicleLogs = {
         document.getElementById('vehDestination').value = item.Destination || '';
         // Handle potential case sensitivity or missing field
         document.getElementById('vehRequestor').value = item.Requestor || item.requestor || '';
-        // Format time to HH:mm (remove seconds if present)
-        document.getElementById('vehDepartureTime').value = (item.DepartureTime || '').substring(0, 5);
-        document.getElementById('vehReturnTime').value = (item.ReturnTime || '').substring(0, 5);
+        // Format time for input[type="time"] - handles ISO strings from Google Sheets
+        document.getElementById('vehDepartureTime').value = parseTimeForInput(item.DepartureTime);
+        document.getElementById('vehReturnTime').value = parseTimeForInput(item.ReturnTime);
         document.getElementById('vehMileageStart').value = item.MileageStart || '';
         document.getElementById('vehMileageEnd').value = item.MileageEnd || '';
         document.getElementById('vehDriver').value = item.Driver || '';
@@ -836,7 +836,7 @@ const Calendar = {
                     html += `
                         <div class="list-group-item bg-transparent border-bottom">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0 text-primary">🚗 ${escapeHtml(ev.label)} <span class="text-muted fw-normal" style="font-size:0.85em;">+ ${escapeHtml(ev.driver || '-')}</span></h6>
+                                <h6 class="mb-0 text-primary">🚗 เลขทะเบียน : ${escapeHtml(ev.label)} <span class="text-muted fw-normal" style="font-size:0.85em;">(พนักงานขับรถ : ${escapeHtml(ev.driver || '-')})</span></h6>
                                 <span class="badge-status badge-${(ev.status || '').toLowerCase()}">${escapeHtml(ev.status)}</span>
                             </div>
                             <p class="mb-1 small text-secondary"><i class="fas fa-user-tag me-1"></i> ผู้ขอใช้รถ : ${escapeHtml(ev.requestor || '-')}</p>
@@ -1067,6 +1067,32 @@ function formatThaiDate(dateVal) {
     const thaiYear = y + 543;
 
     return `${d} ${months[m - 1]} ${thaiYear}`;
+}
+
+/** 
+ * Parse time value for input[type="time"] (returns '' instead of '-' for empty)
+ * Handles ISO strings from Google Sheets (1899-12-30T01:30:00.000Z) and HH:mm:ss
+ */
+function parseTimeForInput(timeVal) {
+    if (!timeVal) return '';
+
+    const str = String(timeVal);
+
+    // If it's a full ISO date string (like 1899-12-30T...)
+    if (str.includes('T')) {
+        const d = new Date(str);
+        if (isNaN(d.getTime())) return '';
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    }
+
+    // If it's already HH:mm or HH:mm:ss
+    if (str.includes(':')) {
+        return str.substring(0, 5);
+    }
+
+    return '';
 }
 
 /** 
