@@ -509,6 +509,7 @@ const VehicleLogs = {
         document.getElementById('vehDate').value = new Date().toISOString().split('T')[0];
         document.getElementById('vehCarLicense').value = '';
         document.getElementById('vehDestination').value = '';
+        document.getElementById('vehRequestor').value = '';
         document.getElementById('vehDepartureTime').value = '';
         document.getElementById('vehReturnTime').value = '';
         document.getElementById('vehMileageStart').value = '';
@@ -528,6 +529,7 @@ const VehicleLogs = {
         document.getElementById('vehDate').value = item.Date || '';
         document.getElementById('vehCarLicense').value = item.CarLicense || '';
         document.getElementById('vehDestination').value = item.Destination || '';
+        document.getElementById('vehRequestor').value = item.Requestor || '';
         document.getElementById('vehDepartureTime').value = item.DepartureTime || '';
         document.getElementById('vehReturnTime').value = item.ReturnTime || '';
         document.getElementById('vehMileageStart').value = item.MileageStart || '';
@@ -543,6 +545,7 @@ const VehicleLogs = {
         const date = document.getElementById('vehDate').value;
         const carLicense = document.getElementById('vehCarLicense').value.trim();
         const destination = document.getElementById('vehDestination').value.trim();
+        const requestor = document.getElementById('vehRequestor').value.trim();
         const departureTime = document.getElementById('vehDepartureTime').value;
         const returnTime = document.getElementById('vehReturnTime').value;
         const mileageStart = document.getElementById('vehMileageStart').value;
@@ -550,13 +553,13 @@ const VehicleLogs = {
         const driver = document.getElementById('vehDriver').value.trim();
         const status = document.getElementById('vehStatus').value;
 
-        if (!date || !carLicense || !destination || !driver) {
+        if (!date || !carLicense || !destination || !requestor || !driver) {
             showToast('กรุณากรอกข้อมูลที่จำเป็น', 'error');
             return;
         }
 
         const action = id ? 'updateVehicleLog' : 'addVehicleLog';
-        const payload = { action, date, carLicense, destination, departureTime, returnTime, mileageStart, mileageEnd, driver, status };
+        const payload = { action, date, carLicense, destination, requestor, departureTime, returnTime, mileageStart, mileageEnd, driver, status };
         if (id) payload.id = id;
 
         const result = await API.post(payload);
