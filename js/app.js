@@ -509,6 +509,8 @@ const VehicleLogs = {
         document.getElementById('vehDate').value = new Date().toISOString().split('T')[0];
         document.getElementById('vehCarLicense').value = '';
         document.getElementById('vehDestination').value = '';
+        document.getElementById('vehDepartureTime').value = '';
+        document.getElementById('vehReturnTime').value = '';
         document.getElementById('vehMileageStart').value = '';
         document.getElementById('vehMileageEnd').value = '';
         document.getElementById('vehDriver').value = '';
@@ -526,6 +528,8 @@ const VehicleLogs = {
         document.getElementById('vehDate').value = item.Date || '';
         document.getElementById('vehCarLicense').value = item.CarLicense || '';
         document.getElementById('vehDestination').value = item.Destination || '';
+        document.getElementById('vehDepartureTime').value = item.DepartureTime || '';
+        document.getElementById('vehReturnTime').value = item.ReturnTime || '';
         document.getElementById('vehMileageStart').value = item.MileageStart || '';
         document.getElementById('vehMileageEnd').value = item.MileageEnd || '';
         document.getElementById('vehDriver').value = item.Driver || '';
@@ -539,6 +543,8 @@ const VehicleLogs = {
         const date = document.getElementById('vehDate').value;
         const carLicense = document.getElementById('vehCarLicense').value.trim();
         const destination = document.getElementById('vehDestination').value.trim();
+        const departureTime = document.getElementById('vehDepartureTime').value;
+        const returnTime = document.getElementById('vehReturnTime').value;
         const mileageStart = document.getElementById('vehMileageStart').value;
         const mileageEnd = document.getElementById('vehMileageEnd').value;
         const driver = document.getElementById('vehDriver').value.trim();
@@ -550,7 +556,7 @@ const VehicleLogs = {
         }
 
         const action = id ? 'updateVehicleLog' : 'addVehicleLog';
-        const payload = { action, date, carLicense, destination, mileageStart, mileageEnd, driver, status };
+        const payload = { action, date, carLicense, destination, departureTime, returnTime, mileageStart, mileageEnd, driver, status };
         if (id) payload.id = id;
 
         const result = await API.post(payload);
