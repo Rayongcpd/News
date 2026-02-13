@@ -482,6 +482,8 @@ const VehicleLogs = {
       <tr class="fade-in" style="animation-delay: ${index * 0.05}s">
         <td data-label="#"><span style="color: var(--text-muted); font-size: 12px;">${index + 1}</span></td>
         <td data-label="วันที่">${formatThaiDate(item.Date)}</td>
+        <td data-label="เวลาไป">${item.DepartureTime || '-'}</td>
+        <td data-label="เวลากลับ">${item.ReturnTime || '-'}</td>
         <td data-label="ทะเบียนรถ"><strong>${escapeHtml(item.CarLicense || '')}</strong></td>
         <td data-label="ปลายทาง">${escapeHtml(item.Destination || '')}</td>
         <td data-label="เลขไมล์เริ่ม" class="text-end">${formatNumber(item.MileageStart)}</td>
@@ -675,7 +677,9 @@ const Calendar = {
                         id: item.ID,
                         driver: item.Driver || '',
                         status: item.Status || '',
-                        destination: item.Destination || ''
+                        destination: item.Destination || '',
+                        departureTime: item.DepartureTime || '',
+                        returnTime: item.ReturnTime || ''
                     });
                 }
             });
@@ -810,7 +814,11 @@ const Calendar = {
                                 <h6 class="mb-0 text-primary">🚗 ${escapeHtml(ev.label)}</h6> <!-- Label is CarLicense -->
                                 <span class="badge-status badge-${(ev.status || '').toLowerCase()}">${escapeHtml(ev.status)}</span>
                             </div>
-                             <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> ปลายทาง: ${escapeHtml(ev.destination || '')}</p>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> ปลายทาง: ${escapeHtml(ev.destination || '')}</p>
+                            <div class="d-flex gap-3 mb-1 small text-secondary">
+                                <span><i class="fas fa-clock me-1"></i> ไป: ${ev.departureTime || '-'}</span>
+                                <span><i class="fas fa-clock me-1"></i> กลับ: ${ev.returnTime || '-'}</span>
+                            </div>
                             <small class="text-muted"><i class="fas fa-id-card me-1"></i> พนักงานขับ: ${escapeHtml(ev.driver)}</small>
                         </div>
                     `;
