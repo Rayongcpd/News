@@ -314,7 +314,7 @@ const Announcements = {
         container.innerHTML = data.map((item, index) => `
       <tr class="fade-in" style="animation-delay: ${index * 0.05}s">
         <td data-label="#"><span style="color: var(--text-muted); font-size: 12px;">${index + 1}</span></td>
-        <td data-label="วันที่">${escapeHtml(item.Date || '')}</td>
+        <td data-label="วันที่">${formatThaiDate(item.Date)}</td>
         <td data-label="หัวข้อ / รายละเอียด">
           <strong>${escapeHtml(item.Title || '')}</strong>
           <br><small class="text-muted">${truncate(item.Detail || '', 60)}</small>
@@ -481,7 +481,7 @@ const VehicleLogs = {
         container.innerHTML = data.map((item, index) => `
       <tr class="fade-in" style="animation-delay: ${index * 0.05}s">
         <td data-label="#"><span style="color: var(--text-muted); font-size: 12px;">${index + 1}</span></td>
-        <td data-label="วันที่">${escapeHtml(item.Date || '')}</td>
+        <td data-label="วันที่">${formatThaiDate(item.Date)}</td>
         <td data-label="ทะเบียนรถ"><strong>${escapeHtml(item.CarLicense || '')}</strong></td>
         <td data-label="ปลายทาง">${escapeHtml(item.Destination || '')}</td>
         <td data-label="เลขไมล์เริ่ม" class="text-end">${formatNumber(item.MileageStart)}</td>
@@ -1002,6 +1002,27 @@ function truncate(str, length) {
 function formatNumber(n) {
     if (n === '' || n === undefined || n === null) return '-';
     return Number(n).toLocaleString();
+}
+
+/** Format date to Thai format (d MMM yyyy) */
+function formatThaiDate(dateVal) {
+    if (!dateVal) return '-';
+
+    // Thai Short Months
+    const months = [
+        'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.',
+        'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.',
+        'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'
+    ];
+
+    // Normalize to YYYY-MM-DD
+    const dateStr = Calendar.normalizeDate(dateVal);
+    if (!dateStr) return '-';
+
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const thaiYear = y + 543;
+
+    return `${d} ${months[m - 1]} ${thaiYear}`;
 }
 
 // ============================================================
