@@ -905,6 +905,7 @@ function showApp() {
         const pageId = activePage.id.replace('page-', '');
         if (pageId === 'announcements') Announcements.render(AppState.announcements);
         if (pageId === 'vehicles') VehicleLogs.render(AppState.vehicleLogs);
+        if (pageId === 'calendar') Calendar.load();
     } else {
         // Default to calendar
         navigateTo('calendar');
