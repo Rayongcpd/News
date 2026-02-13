@@ -11,7 +11,7 @@
     --bg-card: rgba(255, 255, 255, 0.9);
     --bg-glass: rgba(255, 255, 255, 0.7);
     --bg-hover: rgba(0, 0, 0, 0.05);
-    
+
     --text-primary: #2c3e50;
     --text-secondary: #596275;
     --text-muted: #95a5a6;
@@ -31,7 +31,7 @@
     --border-color: #e1e4e8;
     --shadow-soft: 0 4px 6px rgba(0, 0, 0, 0.05);
     --shadow-glow: 0 0 15px rgba(108, 99, 255, 0.1);
-    
+
     --radius: 16px;
     --radius-sm: 10px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -87,9 +87,19 @@ body::before {
 }
 
 @keyframes bgFloat {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(20px, -30px) rotate(1deg); }
-    66% { transform: translate(-20px, 20px) rotate(-1deg); }
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    33% {
+        transform: translate(20px, -30px) rotate(1deg);
+    }
+
+    66% {
+        transform: translate(-20px, 20px) rotate(-1deg);
+    }
 }
 
 /* ============ LOGIN PAGE ============ */
@@ -425,19 +435,19 @@ body::before {
     transition: .4s;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: var(--bg-secondary);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translateX(26px);
 }
 
-input:checked + .slider .fa-sun {
+input:checked+.slider .fa-sun {
     opacity: 1;
 }
 
-input:checked + .slider .fa-moon {
+input:checked+.slider .fa-moon {
     opacity: 0;
 }
 
@@ -489,9 +499,17 @@ input:checked + .slider .fa-moon {
     height: 3px;
 }
 
-.stat-card.announcements::before { background: var(--gradient-primary); }
-.stat-card.vehicles::before { background: var(--gradient-secondary); }
-.stat-card.active::before { background: var(--gradient-success); }
+.stat-card.announcements::before {
+    background: var(--gradient-primary);
+}
+
+.stat-card.vehicles::before {
+    background: var(--gradient-secondary);
+}
+
+.stat-card.active::before {
+    background: var(--gradient-success);
+}
 
 .stat-card:hover {
     transform: translateY(-4px);
@@ -543,7 +561,12 @@ input:checked + .slider .fa-moon {
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    overflow: hidden;
+    overflow: visible;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .filter-toolbar {
@@ -566,6 +589,16 @@ input:checked + .slider .fa-moon {
     letter-spacing: 0.5px;
     padding: 14px 16px;
     white-space: nowrap;
+}
+
+/* Sticky last column (จัดการ) */
+.table thead th:last-child,
+.table tbody td:last-child {
+    position: sticky;
+    right: 0;
+    background: var(--bg-secondary);
+    z-index: 1;
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.05);
 }
 
 .table tbody td {
@@ -640,7 +673,7 @@ input:checked + .slider .fa-moon {
 .btn-close {
     /* Auto invert filter based on theme using css var? Bootstrap uses SVG */
     /* We can filter it manually */
-    filter: invert(0.5); 
+    filter: invert(0.5);
 }
 
 [data-theme="dark"] .btn-close {
@@ -714,9 +747,17 @@ input:checked + .slider .fa-moon {
     min-width: 280px;
 }
 
-.toast-custom.success { border-left: 4px solid var(--accent-success); }
-.toast-custom.error { border-left: 4px solid var(--accent-danger); }
-.toast-custom.info { border-left: 4px solid var(--accent-info); }
+.toast-custom.success {
+    border-left: 4px solid var(--accent-success);
+}
+
+.toast-custom.error {
+    border-left: 4px solid var(--accent-danger);
+}
+
+.toast-custom.info {
+    border-left: 4px solid var(--accent-info);
+}
 
 /* ============ SCROLLBAR ============ */
 ::-webkit-scrollbar {
@@ -738,13 +779,27 @@ input:checked + .slider .fa-moon {
 
 /* ============ ANIMATIONS ============ */
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(40px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .fade-in {
@@ -767,18 +822,58 @@ input:checked + .slider .fa-moon {
 }
 
 @media (max-width: 768px) {
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.show { transform: translateX(0); }
-    .main-content { margin-left: 0; padding: 24px 16px; padding-top: 64px; }
-    .sidebar-toggle { display: block; }
-    .page-header h3 { font-size: 20px; }
-    .stat-card .stat-value { font-size: 24px; }
-    
-    .calendar-day { min-height: 60px; padding: 4px; }
-    .calendar-day .day-number { font-size: 11px; }
-    .calendar-event { font-size: 9px; padding: 1px 3px; }
-    .calendar-header { flex-wrap: wrap; gap: 8px; padding: 12px 16px; }
-    .calendar-header h4 { font-size: 15px; order: -1; flex-basis: 100%; text-align: center; }
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 24px 16px;
+        padding-top: 64px;
+    }
+
+    .sidebar-toggle {
+        display: block;
+    }
+
+    .page-header h3 {
+        font-size: 20px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 24px;
+    }
+
+    .calendar-day {
+        min-height: 60px;
+        padding: 4px;
+    }
+
+    .calendar-day .day-number {
+        font-size: 11px;
+    }
+
+    .calendar-event {
+        font-size: 9px;
+        padding: 1px 3px;
+    }
+
+    .calendar-header {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 16px;
+    }
+
+    .calendar-header h4 {
+        font-size: 15px;
+        order: -1;
+        flex-basis: 100%;
+        text-align: center;
+    }
 }
 
 /* ============ CALENDAR ============ */
@@ -823,8 +918,13 @@ input:checked + .slider .fa-moon {
     flex-shrink: 0;
 }
 
-.legend-dot.announcement { background: var(--accent-primary); }
-.legend-dot.vehicle { background: var(--accent-secondary); }
+.legend-dot.announcement {
+    background: var(--accent-primary);
+}
+
+.legend-dot.vehicle {
+    background: var(--accent-secondary);
+}
 
 .calendar-grid {
     display: grid;
@@ -842,7 +942,9 @@ input:checked + .slider .fa-moon {
     letter-spacing: 0.5px;
 }
 
-.calendar-day-name:first-child { color: var(--accent-danger); }
+.calendar-day-name:first-child {
+    color: var(--accent-danger);
+}
 
 .calendar-day {
     min-height: 100px;
@@ -869,7 +971,8 @@ input:checked + .slider .fa-moon {
 }
 
 .calendar-day.today {
-    background: rgba(108, 99, 255, 0.08); /* This is okay for both modes or needs var */
+    background: rgba(108, 99, 255, 0.08);
+    /* This is okay for both modes or needs var */
     background: var(--bg-hover);
     border-color: var(--accent-primary);
 }
@@ -906,7 +1009,8 @@ input:checked + .slider .fa-moon {
     text-overflow: ellipsis;
     cursor: pointer;
     transition: var(--transition);
-    color: #fff !important; /* Always white text for badges */
+    color: #fff !important;
+    /* Always white text for badges */
 }
 
 .calendar-event:hover {
@@ -927,8 +1031,13 @@ input:checked + .slider .fa-moon {
 }
 
 /* ============ SECTION PAGES ============ */
-.page-section { display: none; }
-.page-section.active-page { display: block; }
+.page-section {
+    display: none;
+}
+
+.page-section.active-page {
+    display: block;
+}
 
 /* ============ DETAIL MODAL TEXT ============ */
 .detail-text {

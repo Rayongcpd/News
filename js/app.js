@@ -504,8 +504,6 @@ const VehicleLogs = {
         <td data-label="จุดประสงค์">${escapeHtml(item.Purpose || '-')}</td>
         <td data-label="ปลายทาง">${escapeHtml(item.Destination || '')}</td>
         <td data-label="ผู้ขอใช้/กลุ่มงาน">${escapeHtml(item.Requestor || item.requestor || '-')}</td>
-        <td data-label="เลขไมล์เริ่ม" class="text-end">${formatNumber(item.MileageStart)}</td>
-        <td data-label="เลขไมล์สิ้นสุด" class="text-end">${formatNumber(item.MileageEnd)}</td>
         <td data-label="พนักงานขับ">${escapeHtml(item.Driver || '')}</td>
         <td data-label="สถานะ"><span class="badge-status badge-${(item.Status || '').toLowerCase()}">${escapeHtml(item.Status || '')}</span></td>
         <td data-label="จัดการ">
