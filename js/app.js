@@ -307,7 +307,7 @@ const Announcements = {
         const container = document.getElementById('announcementsTableBody');
 
         if (!data || data.length === 0) {
-            container.innerHTML = `<tr><td colspan="6">${emptyHTML('ยังไม่มีข่าวประชาสัมพันธ์')}</td></tr>`;
+            container.innerHTML = `<tr><td colspan="7">${emptyHTML('ยังไม่มีรายการปฏิบัติงาน')}</td></tr>`;
             return;
         }
 
@@ -315,10 +315,11 @@ const Announcements = {
       <tr class="fade-in" style="animation-delay: ${index * 0.05}s">
         <td data-label="#"><span style="color: var(--text-muted); font-size: 12px;">${index + 1}</span></td>
         <td data-label="วันที่">${formatThaiDate(item.Date)}</td>
-        <td data-label="หัวข้อ / รายละเอียด">
+        <td data-label="เรื่อง / รายละเอียด">
           <strong>${escapeHtml(item.Title || '')}</strong>
           <br><small class="text-muted">${truncate(item.Detail || '', 60)}</small>
         </td>
+        <td data-label="กลุ่มงาน">${escapeHtml(item.WorkGroup || '-')}</td>
         <td data-label="ไฟล์แนบ">${item.FileURL ? `<a href="${item.FileURL}" target="_blank" class="file-link"><i class="fas fa-paperclip"></i> ดูไฟล์</a>` : '<span style="color: var(--text-muted);">-</span>'}</td>
         <td data-label="โพสต์โดย"><small>${escapeHtml(item.PostedBy || '')}</small></td>
         <td data-label="จัดการ">
@@ -345,7 +346,8 @@ const Announcements = {
 
         document.getElementById('detailModalTitle').textContent = item.Title;
         document.getElementById('detailModalBody').innerHTML = `
-      <p><strong>วันที่:</strong> ${item.Date}</p>
+      <p><strong>วันที่:</strong> ${formatThaiDate(item.Date)}</p>
+      <p><strong>กลุ่มงานที่รับผิดชอบ:</strong> ${escapeHtml(item.WorkGroup || '-')}</p>
       <p><strong>โพสต์โดย:</strong> ${item.PostedBy}</p>
       ${item.FileURL ? `<p><strong>ไฟล์แนบ:</strong> <a href="${item.FileURL}" target="_blank" class="file-link"><i class="fas fa-download"></i> ดาวน์โหลดไฟล์</a></p>` : ''}
       <hr style="border-color: var(--border-color);">
@@ -356,9 +358,11 @@ const Announcements = {
 
     /** Show add form modal */
     showAdd() {
-        document.getElementById('annFormTitle').textContent = 'เพิ่มข่าวใหม่';
+        document.getElementById('annFormTitle').textContent = 'เพิ่มงานใหม่';
         document.getElementById('annFormId').value = '';
         document.getElementById('annTitle').value = '';
+        document.getElementById('annDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('annWorkGroup').value = '';
         document.getElementById('annDetail').value = '';
         document.getElementById('annFile').value = '';
         document.getElementById('annFileURL').value = '';
@@ -370,9 +374,11 @@ const Announcements = {
         const item = AppState.announcements.find(a => a.ID === id);
         if (!item) return;
 
-        document.getElementById('annFormTitle').textContent = 'แก้ไขข่าว';
+        document.getElementById('annFormTitle').textContent = 'แก้ไขงาน';
         document.getElementById('annFormId').value = item.ID;
         document.getElementById('annTitle').value = item.Title || '';
+        document.getElementById('annDate').value = Calendar.normalizeDate(item.Date) || '';
+        document.getElementById('annWorkGroup').value = item.WorkGroup || '';
         document.getElementById('annDetail').value = item.Detail || '';
         document.getElementById('annFile').value = '';
         document.getElementById('annFileURL').value = item.FileURL || '';
@@ -383,12 +389,22 @@ const Announcements = {
     async save() {
         const id = document.getElementById('annFormId').value;
         const title = document.getElementById('annTitle').value.trim();
+        const date = document.getElementById('annDate').value;
+        const workGroup = document.getElementById('annWorkGroup').value.trim();
         const detail = document.getElementById('annDetail').value.trim();
         let fileURL = document.getElementById('annFileURL').value;
         const fileInput = document.getElementById('annFile');
 
         if (!title) {
-            showToast('กรุณากรอกหัวข้อข่าว', 'error');
+            showToast('กรุณากรอกเรื่อง/การปฏิบัติงาน', 'error');
+            return;
+        }
+        if (!date) {
+            showToast('กรุณาระบุวันที่', 'error');
+            return;
+        }
+        if (!workGroup) {
+            showToast('กรุณาระบุกลุ่มงานที่รับผิดชอบ', 'error');
             return;
         }
 
@@ -405,7 +421,7 @@ const Announcements = {
         }
 
         const action = id ? 'updateAnnouncement' : 'addAnnouncement';
-        const payload = { action, title, detail, fileURL };
+        const payload = { action, title, date, workGroup, detail, fileURL };
         if (id) payload.id = id;
 
         const result = await API.post(payload);
@@ -436,7 +452,7 @@ const Announcements = {
 
     /** Confirm and delete announcement */
     async confirmDelete(id) {
-        if (!confirm('ต้องการลบข่าวนี้หรือไม่?')) return;
+        if (!confirm('ต้องการลบรายการนี้หรือไม่?')) return;
 
         const result = await API.post({ action: 'deleteAnnouncement', id });
 
@@ -662,10 +678,11 @@ const Calendar = {
                     this.events.push({
                         type: 'announcement',
                         date: this.normalizeDate(item.Date),
-                        label: item.Title || 'ข่าว',
+                        label: item.Title || 'งาน',
                         id: item.ID,
                         detail: item.Detail || '',
-                        postedBy: item.PostedBy || ''
+                        postedBy: item.PostedBy || '',
+                        workGroup: item.WorkGroup || ''
                     });
                 }
             });
@@ -741,7 +758,7 @@ const Calendar = {
             let eventsHtml = '';
 
             if (newsEvents.length > 0) {
-                eventsHtml += `<div class="calendar-event announcement" onclick="Calendar.showGroup('${dateStr}', 'announcement')" title="ดูข่าวประชาสัมพันธ์">📢 ข่าวประชาสัมพันธ์ (${newsEvents.length})</div>`;
+                eventsHtml += `<div class="calendar-event announcement" onclick="Calendar.showGroup('${dateStr}', 'announcement')" title="ดูการปฏิบัติงาน">📋 การปฏิบัติงาน (${newsEvents.length})</div>`;
             }
 
             if (vehicleEvents.length > 0) {
@@ -793,7 +810,7 @@ const Calendar = {
         // Prevent bubbling if called from onclick directly (though in HTML we passed string values)
         if (event) event.stopPropagation();
 
-        const typeName = type === 'announcement' ? 'ข่าวประชาสัมพันธ์' : 'บันทึกการใช้รถ';
+        const typeName = type === 'announcement' ? 'การปฏิบัติงาน' : 'บันทึกการใช้รถ';
         const modalTitle = `${dateStr} - ${typeName}`;
 
         // Filter events
