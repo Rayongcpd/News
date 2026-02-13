@@ -360,8 +360,14 @@
               <input type="date" class="form-control" id="vehDate">
             </div>
             <div class="col-md-6">
-              <label class="form-label" style="color:var(--text-secondary)">ทะเบียนรถ</label>
-              <input type="text" class="form-control" id="vehCarLicense" placeholder="เช่น กข 1234">
+              <label class="form-label" style="color:var(--text-secondary)">ทะเบียนรถ *</label>
+              <select class="form-select" id="vehCarLicense">
+                <option value="" selected disabled>เลือกทะเบียนรถ</option>
+                <option value="ขม 8601 รย">ขม 8601 รย</option>
+                <option value="ขต 9095 รย">ขต 9095 รย</option>
+                <option value="กว 1045 รย">กว 1045 รย</option>
+                <option value="นค 2268 รย (รถตู้)">นค 2268 รย (รถตู้)</option>
+              </select>
             </div>
             <div class="col-md-12">
               <label class="form-label" style="color:var(--text-secondary)">จุดประสงค์การขอใช้รถ *</label>
