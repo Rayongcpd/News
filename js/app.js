@@ -474,7 +474,7 @@ const VehicleLogs = {
         const container = document.getElementById('vehicleTableBody');
 
         if (!data || data.length === 0) {
-            container.innerHTML = `<tr><td colspan="9">${emptyHTML('ยังไม่มีบันทึกการใช้รถ')}</td></tr>`;
+            container.innerHTML = `<tr><td colspan="10">${emptyHTML('ยังไม่มีบันทึกการใช้รถ')}</td></tr>`;
             return;
         }
 
@@ -486,6 +486,7 @@ const VehicleLogs = {
         <td data-label="เวลากลับ">${formatTime(item.ReturnTime)}</td>
         <td data-label="ทะเบียนรถ"><strong>${escapeHtml(item.CarLicense || '')}</strong></td>
         <td data-label="ปลายทาง">${escapeHtml(item.Destination || '')}</td>
+        <td data-label="ผู้ขอใช้/กลุ่มงาน">${escapeHtml(item.Requestor || item.requestor || '-')}</td>
         <td data-label="เลขไมล์เริ่ม" class="text-end">${formatNumber(item.MileageStart)}</td>
         <td data-label="เลขไมล์สิ้นสุด" class="text-end">${formatNumber(item.MileageEnd)}</td>
         <td data-label="พนักงานขับ">${escapeHtml(item.Driver || '')}</td>
@@ -681,6 +682,7 @@ const Calendar = {
                         driver: item.Driver || '',
                         status: item.Status || '',
                         destination: item.Destination || '',
+                        requestor: item.Requestor || item.requestor || '',
                         departureTime: item.DepartureTime || '',
                         returnTime: item.ReturnTime || ''
                     });
@@ -818,6 +820,7 @@ const Calendar = {
                                 <span class="badge-status badge-${(ev.status || '').toLowerCase()}">${escapeHtml(ev.status)}</span>
                             </div>
                             <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> ปลายทาง: ${escapeHtml(ev.destination || '')}</p>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-user-tag me-1"></i> ผู้ขอ: ${escapeHtml(ev.requestor || '-')}</p>
                             <div class="d-flex gap-3 mb-1 small text-secondary">
                                 <span><i class="fas fa-clock me-1"></i> ไป: ${formatTime(ev.departureTime)}</span>
                                 <span><i class="fas fa-clock me-1"></i> กลับ: ${formatTime(ev.returnTime)}</span>
