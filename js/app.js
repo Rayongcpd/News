@@ -329,7 +329,7 @@ const Announcements = {
           <br><small class="text-muted">${truncate(item.Detail || '', 60)}</small>
         </td>
         <td data-label="สถานที่">${escapeHtml(item.Location || '-')}</td>
-        <td data-label="สหกรณ์ฯ">${escapeHtml(item.CoopParticipation || '-')}</td>
+        <td data-label="สหกรณ์จังหวัดระยอง">${escapeHtml(item.CoopParticipation || '-')}</td>
         <td data-label="กลุ่มงาน">${escapeHtml(item.WorkGroup || '-')}</td>
         <td data-label="เอกสารแนบ">${item.FileURL ? `<a href="${item.FileURL}" target="_blank" class="file-link"><i class="fas fa-paperclip"></i> ดูไฟล์</a>` : '<span style="color: var(--text-muted);">-</span>'}</td>
         <td data-label="โพสต์โดย"><small>${escapeHtml(item.PostedBy || '')}</small></td>
@@ -872,7 +872,7 @@ const Calendar = {
                             <h6 class="mb-1 text-primary">${escapeHtml(ev.label)}</h6>
                             <p class="mb-1 small text-secondary"><i class="fas fa-clock me-1"></i> เวลา: ${timeDisplay}</p>
                             <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> สถานที่: ${escapeHtml(ev.location || '-')}</p>
-                            <p class="mb-1 small text-secondary"><i class="fas fa-handshake me-1"></i> สหกรณ์ฯ: ${escapeHtml(ev.coopParticipation || '-')}</p>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-handshake me-1"></i> สหกรณ์จังหวัดระยอง: ${escapeHtml(ev.coopParticipation || '-')}</p>
                             <p class="mb-1 small text-secondary"><i class="fas fa-layer-group me-1"></i> กลุ่มงาน: ${escapeHtml(ev.workGroup || '-')}</p>
                             <p class="mb-1 small text-secondary"><i class="fas fa-file-alt me-1"></i> รายละเอียด: ${escapeHtml(ev.detail || '-')}</p>
                             <small class="text-muted"><i class="fas fa-user me-1"></i> ผู้สร้างโพสนี้: ${escapeHtml(ev.postedBy)}</small>
