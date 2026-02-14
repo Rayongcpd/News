@@ -161,16 +161,19 @@
                 <tr>
                   <th>#</th>
                   <th>วันที่</th>
-                  <th>เรื่อง / รายละเอียด</th>
+                  <th>เวลา</th>
+                  <th>เรื่อง</th>
+                  <th>สถานที่</th>
+                  <th>สหกรณ์ฯ</th>
                   <th>กลุ่มงาน</th>
-                  <th>ไฟล์แนบ</th>
+                  <th>เอกสารแนบ</th>
                   <th>โพสต์โดย</th>
                   <th>จัดการ</th>
                 </tr>
               </thead>
               <tbody id="announcementsTableBody">
                 <tr>
-                  <td colspan="7">
+                  <td colspan="10">
                     <div class="empty-state"><i class="fas fa-inbox"></i>
                       <p>กำลังโหลด...</p>
                     </div>
@@ -310,24 +313,55 @@
         <div class="modal-body">
           <input type="hidden" id="annFormId">
           <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label" style="color:var(--text-secondary)">เรื่อง / การปฏิบัติงาน *</label>
-              <input type="text" class="form-control" id="annTitle" placeholder="กรอกเรื่องหรือการปฏิบัติงาน">
+            <!-- เรื่อง -->
+            <div class="col-md-12">
+              <label class="form-label" style="color:var(--text-secondary)">เรื่อง *</label>
+              <input type="text" class="form-control" id="annTitle" placeholder="กรอกเรื่อง">
             </div>
+            <!-- วันที่ -->
             <div class="col-md-6">
               <label class="form-label" style="color:var(--text-secondary)">วันที่ *</label>
               <input type="date" class="form-control" id="annDate">
             </div>
-            <div class="col-md-12">
-              <label class="form-label" style="color:var(--text-secondary)">กลุ่มงานที่รับผิดชอบ *</label>
-              <input type="text" class="form-control" id="annWorkGroup" placeholder="ระบุกลุ่มงานที่รับผิดชอบ">
+            <!-- เวลา -->
+            <div class="col-md-6">
+              <label class="form-label" style="color:var(--text-secondary)">เวลา</label>
+              <div class="input-group">
+                <input type="time" class="form-control" id="annTime">
+                <select class="form-select" id="annTimeSuffix" style="max-width: 140px;">
+                  <option value="เป็นต้นไป">เป็นต้นไป</option>
+                  <option value="โมง">โมง</option>
+                </select>
+              </div>
             </div>
+            <!-- สถานที่ -->
+            <div class="col-md-12">
+              <label class="form-label" style="color:var(--text-secondary)">สถานที่</label>
+              <input type="text" class="form-control" id="annLocation" placeholder="ระบุสถานที่">
+            </div>
+            <!-- สหกรณ์จังหวัดระยอง -->
+            <div class="col-md-12">
+              <label class="form-label" style="color:var(--text-secondary)">สหกรณ์จังหวัดระยอง</label>
+              <select class="form-select" id="annCoopParticipation">
+                <option value="" selected>-- เลือก --</option>
+                <option value="เข้าร่วม">เข้าร่วม</option>
+                <option value="เข้าร่วมกับ">เข้าร่วมกับ</option>
+                <option value="มอบหมายให้">มอบหมายให้</option>
+              </select>
+            </div>
+            <!-- กลุ่มงาน -->
+            <div class="col-md-12">
+              <label class="form-label" style="color:var(--text-secondary)">กลุ่มงาน</label>
+              <input type="text" class="form-control" id="annWorkGroup" placeholder="ระบุกลุ่มงาน">
+            </div>
+            <!-- รายละเอียด -->
             <div class="col-md-12">
               <label class="form-label" style="color:var(--text-secondary)">รายละเอียด</label>
-              <textarea class="form-control" id="annDetail" rows="4" placeholder="กรอกรายละเอียดงาน"></textarea>
+              <textarea class="form-control" id="annDetail" rows="4" placeholder="กรอกรายละเอียด"></textarea>
             </div>
+            <!-- เอกสารแนบ -->
             <div class="col-md-12">
-              <label class="form-label" style="color:var(--text-secondary)">แนบไฟล์ (PDF/รูปภาพ, สูงสุด 10MB)</label>
+              <label class="form-label" style="color:var(--text-secondary)">เอกสารแนบ (PDF/รูปภาพ, สูงสุด 10MB)</label>
               <input type="file" class="form-control" id="annFile"
                 accept=".pdf,.jpg,.jpeg,.png,.gif,.doc,.docx,.xls,.xlsx">
               <input type="hidden" id="annFileURL">

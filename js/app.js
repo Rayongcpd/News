@@ -307,20 +307,31 @@ const Announcements = {
         const container = document.getElementById('announcementsTableBody');
 
         if (!data || data.length === 0) {
-            container.innerHTML = `<tr><td colspan="7">${emptyHTML('ยังไม่มีรายการปฏิบัติงาน')}</td></tr>`;
+            container.innerHTML = `<tr><td colspan="10">${emptyHTML('ยังไม่มีรายการปฏิบัติงาน')}</td></tr>`;
             return;
         }
 
-        container.innerHTML = data.map((item, index) => `
+        container.innerHTML = data.map((item, index) => {
+            // Format time display
+            let timeDisplay = '-';
+            if (item.Time) {
+                timeDisplay = formatTime(item.Time);
+                if (item.TimeSuffix) timeDisplay += ' ' + escapeHtml(item.TimeSuffix);
+            }
+
+            return `
       <tr class="fade-in" style="animation-delay: ${index * 0.05}s">
         <td data-label="#"><span style="color: var(--text-muted); font-size: 12px;">${index + 1}</span></td>
         <td data-label="วันที่">${formatThaiDate(item.Date)}</td>
-        <td data-label="เรื่อง / รายละเอียด">
+        <td data-label="เวลา">${timeDisplay}</td>
+        <td data-label="เรื่อง">
           <strong>${escapeHtml(item.Title || '')}</strong>
           <br><small class="text-muted">${truncate(item.Detail || '', 60)}</small>
         </td>
+        <td data-label="สถานที่">${escapeHtml(item.Location || '-')}</td>
+        <td data-label="สหกรณ์ฯ">${escapeHtml(item.CoopParticipation || '-')}</td>
         <td data-label="กลุ่มงาน">${escapeHtml(item.WorkGroup || '-')}</td>
-        <td data-label="ไฟล์แนบ">${item.FileURL ? `<a href="${item.FileURL}" target="_blank" class="file-link"><i class="fas fa-paperclip"></i> ดูไฟล์</a>` : '<span style="color: var(--text-muted);">-</span>'}</td>
+        <td data-label="เอกสารแนบ">${item.FileURL ? `<a href="${item.FileURL}" target="_blank" class="file-link"><i class="fas fa-paperclip"></i> ดูไฟล์</a>` : '<span style="color: var(--text-muted);">-</span>'}</td>
         <td data-label="โพสต์โดย"><small>${escapeHtml(item.PostedBy || '')}</small></td>
         <td data-label="จัดการ">
           <button class="btn btn-outline-custom btn-sm me-1" onclick="Announcements.showDetail('${item.ID}')" title="ดูรายละเอียด">
@@ -336,7 +347,8 @@ const Announcements = {
           ` : ''}
         </td>
       </tr>
-    `).join('');
+    `;
+        }).join('');
     },
 
     /** Show detail modal */
@@ -344,12 +356,23 @@ const Announcements = {
         const item = AppState.announcements.find(a => a.ID === id);
         if (!item) return;
 
+        // Format time for display
+        let timeDisplay = '-';
+        if (item.Time) {
+            timeDisplay = formatTime(item.Time);
+            if (item.TimeSuffix) timeDisplay += ' ' + escapeHtml(item.TimeSuffix);
+        }
+
         document.getElementById('detailModalTitle').textContent = item.Title;
         document.getElementById('detailModalBody').innerHTML = `
+      <p><strong>เรื่อง:</strong> ${escapeHtml(item.Title || '-')}</p>
       <p><strong>วันที่:</strong> ${formatThaiDate(item.Date)}</p>
-      <p><strong>กลุ่มงานที่รับผิดชอบ:</strong> ${escapeHtml(item.WorkGroup || '-')}</p>
+      <p><strong>เวลา:</strong> ${timeDisplay}</p>
+      <p><strong>สถานที่:</strong> ${escapeHtml(item.Location || '-')}</p>
+      <p><strong>สหกรณ์จังหวัดระยอง:</strong> ${escapeHtml(item.CoopParticipation || '-')}</p>
+      <p><strong>กลุ่มงาน:</strong> ${escapeHtml(item.WorkGroup || '-')}</p>
       <p><strong>โพสต์โดย:</strong> ${item.PostedBy}</p>
-      ${item.FileURL ? `<p><strong>ไฟล์แนบ:</strong> <a href="${item.FileURL}" target="_blank" class="file-link"><i class="fas fa-download"></i> ดาวน์โหลดไฟล์</a></p>` : ''}
+      ${item.FileURL ? `<p><strong>เอกสารแนบ:</strong> <a href="${item.FileURL}" target="_blank" class="file-link"><i class="fas fa-download"></i> ดาวน์โหลดไฟล์</a></p>` : ''}
       <hr style="border-color: var(--border-color);">
       <div class="detail-text">${escapeHtml(item.Detail || 'ไม่มีรายละเอียด')}</div>
     `;
@@ -362,6 +385,10 @@ const Announcements = {
         document.getElementById('annFormId').value = '';
         document.getElementById('annTitle').value = '';
         document.getElementById('annDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('annTime').value = '';
+        document.getElementById('annTimeSuffix').value = 'เป็นต้นไป';
+        document.getElementById('annLocation').value = '';
+        document.getElementById('annCoopParticipation').value = '';
         document.getElementById('annWorkGroup').value = '';
         document.getElementById('annDetail').value = '';
         document.getElementById('annFile').value = '';
@@ -378,6 +405,10 @@ const Announcements = {
         document.getElementById('annFormId').value = item.ID;
         document.getElementById('annTitle').value = item.Title || '';
         document.getElementById('annDate').value = Calendar.normalizeDate(item.Date) || '';
+        document.getElementById('annTime').value = parseTimeForInput(item.Time) || '';
+        document.getElementById('annTimeSuffix').value = item.TimeSuffix || 'เป็นต้นไป';
+        document.getElementById('annLocation').value = item.Location || '';
+        document.getElementById('annCoopParticipation').value = item.CoopParticipation || '';
         document.getElementById('annWorkGroup').value = item.WorkGroup || '';
         document.getElementById('annDetail').value = item.Detail || '';
         document.getElementById('annFile').value = '';
@@ -390,21 +421,21 @@ const Announcements = {
         const id = document.getElementById('annFormId').value;
         const title = document.getElementById('annTitle').value.trim();
         const date = document.getElementById('annDate').value;
+        const time = document.getElementById('annTime').value;
+        const timeSuffix = document.getElementById('annTimeSuffix').value;
+        const location = document.getElementById('annLocation').value.trim();
+        const coopParticipation = document.getElementById('annCoopParticipation').value;
         const workGroup = document.getElementById('annWorkGroup').value.trim();
         const detail = document.getElementById('annDetail').value.trim();
         let fileURL = document.getElementById('annFileURL').value;
         const fileInput = document.getElementById('annFile');
 
         if (!title) {
-            showToast('กรุณากรอกเรื่อง/การปฏิบัติงาน', 'error');
+            showToast('กรุณากรอกเรื่อง', 'error');
             return;
         }
         if (!date) {
             showToast('กรุณาระบุวันที่', 'error');
-            return;
-        }
-        if (!workGroup) {
-            showToast('กรุณาระบุกลุ่มงานที่รับผิดชอบ', 'error');
             return;
         }
 
@@ -421,7 +452,7 @@ const Announcements = {
         }
 
         const action = id ? 'updateAnnouncement' : 'addAnnouncement';
-        const payload = { action, title, date, workGroup, detail, fileURL };
+        const payload = { action, title, date, time, timeSuffix, location, coopParticipation, workGroup, detail, fileURL };
         if (id) payload.id = id;
 
         const result = await API.post(payload);
@@ -684,7 +715,11 @@ const Calendar = {
                         id: item.ID,
                         detail: item.Detail || '',
                         postedBy: item.PostedBy || '',
-                        workGroup: item.WorkGroup || ''
+                        workGroup: item.WorkGroup || '',
+                        time: item.Time || '',
+                        timeSuffix: item.TimeSuffix || '',
+                        location: item.Location || '',
+                        coopParticipation: item.CoopParticipation || ''
                     });
                 }
             });
@@ -825,9 +860,20 @@ const Calendar = {
         } else {
             groupEvents.forEach(ev => {
                 if (type === 'announcement') {
+                    // Format time display
+                    let timeDisplay = '-';
+                    if (ev.time) {
+                        timeDisplay = formatTime(ev.time);
+                        if (ev.timeSuffix) timeDisplay += ' ' + escapeHtml(ev.timeSuffix);
+                    }
+
                     html += `
                         <div class="list-group-item bg-transparent border-bottom">
                             <h6 class="mb-1 text-primary">${escapeHtml(ev.label)}</h6>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-clock me-1"></i> เวลา: ${timeDisplay}</p>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> สถานที่: ${escapeHtml(ev.location || '-')}</p>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-handshake me-1"></i> สหกรณ์ฯ: ${escapeHtml(ev.coopParticipation || '-')}</p>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-layer-group me-1"></i> กลุ่มงาน: ${escapeHtml(ev.workGroup || '-')}</p>
                             <p class="mb-1 small text-secondary">${escapeHtml(ev.detail || 'ไม่มีรายละเอียด')}</p>
                             <small class="text-muted"><i class="fas fa-user me-1"></i> ${escapeHtml(ev.postedBy)}</small>
                         </div>
