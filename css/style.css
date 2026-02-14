@@ -144,6 +144,12 @@ body::before {
     color: var(--text-primary);
 }
 
+/* Force icons in buttons */
+.btn i, .btn-outline-custom i, .btn-danger-custom i {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900 !important;
+}
+
 .login-card .logo p {
     font-size: 13px;
     color: var(--text-muted);

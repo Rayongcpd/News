@@ -339,10 +339,10 @@ const Announcements = {
           </button>
           ${AppState.isAdmin() ? `
           <button class="btn btn-outline-custom btn-sm me-1" onclick="Announcements.showEdit('${item.ID}')" title="แก้ไข">
-            <i class="fas fa-edit"></i>
+            <i class="fas fa-pen-to-square"></i>
           </button>
           <button class="btn btn-danger-custom btn-sm" onclick="Announcements.confirmDelete('${item.ID}')" title="ลบ">
-            <i class="fas fa-trash"></i>
+            <i class="fas fa-trash-can"></i>
           </button>
           ` : ''}
         </td>
