@@ -874,8 +874,8 @@ const Calendar = {
                             <p class="mb-1 small text-secondary"><i class="fas fa-map-marker-alt me-1"></i> สถานที่: ${escapeHtml(ev.location || '-')}</p>
                             <p class="mb-1 small text-secondary"><i class="fas fa-handshake me-1"></i> สหกรณ์ฯ: ${escapeHtml(ev.coopParticipation || '-')}</p>
                             <p class="mb-1 small text-secondary"><i class="fas fa-layer-group me-1"></i> กลุ่มงาน: ${escapeHtml(ev.workGroup || '-')}</p>
-                            <p class="mb-1 small text-secondary">${escapeHtml(ev.detail || 'ไม่มีรายละเอียด')}</p>
-                            <small class="text-muted"><i class="fas fa-user me-1"></i> ${escapeHtml(ev.postedBy)}</small>
+                            <p class="mb-1 small text-secondary"><i class="fas fa-file-alt me-1"></i> รายละเอียด: ${escapeHtml(ev.detail || '-')}</p>
+                            <small class="text-muted"><i class="fas fa-user me-1"></i> ผู้สร้างโพสนี้: ${escapeHtml(ev.postedBy)}</small>
                         </div>
                     `;
                 } else {
