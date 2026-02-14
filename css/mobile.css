@@ -134,4 +134,28 @@
         font-size: 14px;
         padding: 4px 0;
     }
+
+    /* --- Mobile Calendar Optimization --- */
+    .calendar-event .event-label {
+        display: none !important;
+    }
+
+    .calendar-event {
+        justify-content: center;
+        padding: 2px 4px !important;
+        text-align: center;
+        display: flex !important;
+        align-items: center;
+        min-height: 20px;
+    }
+
+    .calendar-event .event-count {
+        font-size: 10px;
+        margin-left: 2px;
+    }
+
+    .calendar-event .event-icon {
+        font-size: 11px;
+        margin-right: 0;
+    }
 }

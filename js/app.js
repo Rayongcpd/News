@@ -853,11 +853,15 @@ const Calendar = {
             let eventsHtml = '';
 
             if (newsEvents.length > 0) {
-                eventsHtml += `<div class="calendar-event announcement" onclick="Calendar.showGroup('${dateStr}', 'announcement')" title="ดูการปฏิบัติงาน">📋 การปฏิบัติงาน (${newsEvents.length})</div>`;
+                eventsHtml += `<div class="calendar-event announcement" onclick="Calendar.showGroup('${dateStr}', 'announcement')" title="ดูการปฏิบัติงาน">
+                    <span class="event-icon">📋</span> <span class="event-label">การปฏิบัติงาน</span> <span class="event-count">(${newsEvents.length})</span>
+                </div>`;
             }
 
             if (vehicleEvents.length > 0) {
-                eventsHtml += `<div class="calendar-event vehicle" onclick="Calendar.showGroup('${dateStr}', 'vehicle')" title="ดูบันทึกการใช้รถ">🚗 บันทึกการใช้รถ (${vehicleEvents.length})</div>`;
+                eventsHtml += `<div class="calendar-event vehicle" onclick="Calendar.showGroup('${dateStr}', 'vehicle')" title="ดูบันทึกการใช้รถ">
+                    <span class="event-icon">🚗</span> <span class="event-label">บันทึกการใช้รถ</span> <span class="event-count">(${vehicleEvents.length})</span>
+                </div>`;
             }
 
             html += `<div class="calendar-day${isToday ? ' today' : ''}">
