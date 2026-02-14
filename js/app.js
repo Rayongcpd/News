@@ -932,7 +932,8 @@ const Calendar = {
                             <p class="mb-1 small text-secondary"><i class="fas fa-handshake me-1"></i> สหกรณ์จังหวัดระยอง: ${escapeHtml(ev.coopParticipation || '-')}</p>
                             <p class="mb-1 small text-secondary"><i class="fas fa-layer-group me-1"></i> กลุ่มงาน: ${escapeHtml(ev.workGroup || '-')}</p>
                             <p class="mb-1 small text-secondary"><i class="fas fa-file-alt me-1"></i> รายละเอียด: ${escapeHtml(ev.detail || '-')}</p>
-                            <small class="text-muted"><i class="fas fa-user me-1"></i> ผู้สร้างโพสนี้: ${escapeHtml(ev.postedBy)}</small>
+                            <hr style="border-color: var(--border-color); margin: 8px 0;">
+                            <small class="text-muted d-block text-end fst-italic"><i class="fas fa-user me-1"></i> ผู้สร้างโพสนี้: ${escapeHtml(ev.postedBy)}</small>
                         </div>
                     `;
                 } else {
