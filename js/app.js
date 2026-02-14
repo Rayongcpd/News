@@ -371,10 +371,11 @@ const Announcements = {
       <p><strong>สถานที่:</strong> ${escapeHtml(item.Location || '-')}</p>
       <p><strong>สหกรณ์จังหวัดระยอง:</strong> ${escapeHtml(item.CoopParticipation || '-')}</p>
       <p><strong>กลุ่มงาน:</strong> ${escapeHtml(item.WorkGroup || '-')}</p>
-      <p><strong>โพสต์โดย:</strong> ${item.PostedBy}</p>
       ${item.FileURL ? `<p><strong>เอกสารแนบ:</strong> <a href="${item.FileURL}" target="_blank" class="file-link"><i class="fas fa-download"></i> ดาวน์โหลดไฟล์</a></p>` : ''}
       <hr style="border-color: var(--border-color);">
       <div class="detail-text">${escapeHtml(item.Detail || 'ไม่มีรายละเอียด')}</div>
+      <hr style="border-color: var(--border-color);">
+      <p class="text-muted small" style="text-align: right;"><strong>โพสต์โดย:</strong> ${item.PostedBy}</p>
     `;
         new bootstrap.Modal(document.getElementById('detailModal')).show();
     },
