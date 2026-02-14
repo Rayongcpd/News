@@ -385,7 +385,13 @@ const Announcements = {
         document.getElementById('annFormId').value = '';
         document.getElementById('annTitle').value = '';
         document.getElementById('annDate').value = new Date().toISOString().split('T')[0];
-        document.getElementById('annTime').value = '';
+
+        // Populate and set default time (e.g., nearest hour or 09:00)
+        this.populateTimeSelects();
+        // Remove default time to prevent errors
+        document.getElementById('annTimeHour').value = '';
+        document.getElementById('annTimeMinute').value = '';
+
         document.getElementById('annTimeSuffix').value = 'น.';
         document.getElementById('annLocation').value = '';
         document.getElementById('annCoopParticipation').value = '';
@@ -394,6 +400,34 @@ const Announcements = {
         document.getElementById('annFile').value = '';
         document.getElementById('annFileURL').value = '';
         new bootstrap.Modal(document.getElementById('annFormModal')).show();
+    },
+
+    /** Populate hour and minute selects */
+    populateTimeSelects() {
+        const hourSelect = document.getElementById('annTimeHour');
+        const minuteSelect = document.getElementById('annTimeMinute');
+
+        // Clear existing options
+        hourSelect.innerHTML = '<option value="" selected disabled>ชม.</option>';
+        minuteSelect.innerHTML = '<option value="" selected disabled>นาที</option>';
+
+        // Hours 00-23
+        for (let i = 0; i < 24; i++) {
+            const val = String(i).padStart(2, '0');
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.textContent = val;
+            hourSelect.appendChild(opt);
+        }
+
+        // Minutes 00-59
+        for (let i = 0; i < 60; i++) {
+            const val = String(i).padStart(2, '0');
+            const opt = document.createElement('option');
+            opt.value = val;
+            opt.textContent = val;
+            minuteSelect.appendChild(opt);
+        }
     },
 
     /** Show edit form modal */
@@ -405,7 +439,22 @@ const Announcements = {
         document.getElementById('annFormId').value = item.ID;
         document.getElementById('annTitle').value = item.Title || '';
         document.getElementById('annDate').value = Calendar.normalizeDate(item.Date) || '';
-        document.getElementById('annTime').value = parseTimeForInput(item.Time) || '';
+
+        // Populate select options first
+        this.populateTimeSelects();
+
+        // Parse time string (HH:mm) to set selects
+        const timeStr = parseTimeForInput(item.Time); // Returns HH:mm or ''
+        if (timeStr && timeStr.includes(':')) {
+            const [h, m] = timeStr.split(':');
+            document.getElementById('annTimeHour').value = h;
+            document.getElementById('annTimeMinute').value = m;
+        } else {
+            // Default if empty
+            document.getElementById('annTimeHour').value = '';
+            document.getElementById('annTimeMinute').value = '';
+        }
+
         document.getElementById('annTimeSuffix').value = item.TimeSuffix || 'น.';
         document.getElementById('annLocation').value = item.Location || '';
         document.getElementById('annCoopParticipation').value = item.CoopParticipation || '';
@@ -421,7 +470,14 @@ const Announcements = {
         const id = document.getElementById('annFormId').value;
         const title = document.getElementById('annTitle').value.trim();
         const date = document.getElementById('annDate').value;
-        const time = document.getElementById('annTime').value;
+        // Combine hour and minute
+        const hour = document.getElementById('annTimeHour').value;
+        const minute = document.getElementById('annTimeMinute').value;
+        let time = '';
+        if (hour && minute) {
+            time = `${hour}:${minute}`;
+        }
+
         const timeSuffix = document.getElementById('annTimeSuffix').value;
         const location = document.getElementById('annLocation').value.trim();
         const coopParticipation = document.getElementById('annCoopParticipation').value;
@@ -1138,12 +1194,32 @@ function parseTimeForInput(timeVal) {
         return str.substring(0, 5);
     }
 
+    try {
+        // If it's a full ISO string or Date object
+        const d = new Date(timeVal);
+        // Check if valid date and not just "12:00" string treated as date (which might be invalid or epoch)
+        // Actually, if it's "HH:mm", new Date("HH:mm") is "Invalid Date" in most browsers
+        if (!isNaN(d.getTime()) && String(timeVal).includes('T')) {
+            const h = String(d.getHours()).padStart(2, '0');
+            const m = String(d.getMinutes()).padStart(2, '0');
+            return `${h}:${m}`;
+        }
+    } catch (e) { }
+
+    // Fallback for simple string HH:mm or HH:mm:ss
+    const s = String(timeVal);
+    if (s.includes(':')) {
+        const parts = s.split(':');
+        // ensure padded
+        const h = parts[0].padStart(2, '0');
+        const m = parts[1].padStart(2, '0');
+        return `${h}:${m}`;
+    }
     return '';
 }
 
-/** 
- * Format time string to HH:mm
- * Handles ISO strings (2024-02-16T10:00:00.000Z) or simple HH:mm:ss
+/**
+ * Format time for display (e.g. 13:30)
  */
 function formatTime(timeVal) {
     if (!timeVal) return '-';

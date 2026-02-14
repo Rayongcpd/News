@@ -327,10 +327,12 @@
             <div class="col-md-6">
               <label class="form-label" style="color:var(--text-secondary)">เวลา (24 ชม.)</label>
               <div class="input-group">
-                <input type="time" class="form-control" id="annTime">
-                <select class="form-select" id="annTimeSuffix" style="max-width: 140px;">
-                  <option value="เป็นต้นไป">เป็นต้นไป</option>
+                <select class="form-select" id="annTimeHour" aria-label="Hour"></select>
+                <span class="input-group-text px-2">:</span>
+                <select class="form-select" id="annTimeMinute" aria-label="Minute"></select>
+                <select class="form-select" id="annTimeSuffix" style="max-width: 110px;">
                   <option value="น.">น.</option>
+                  <option value="เป็นต้นไป">เป็นต้นไป</option>
                 </select>
               </div>
             </div>
