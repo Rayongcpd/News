@@ -145,7 +145,9 @@ body::before {
 }
 
 /* Force icons in buttons */
-.btn i, .btn-outline-custom i, .btn-danger-custom i {
+.btn i,
+.btn-outline-custom i,
+.btn-danger-custom i {
     font-family: "Font Awesome 6 Free" !important;
     font-weight: 900 !important;
 }
@@ -578,17 +580,40 @@ input:checked+.slider .fa-moon {
 .filter-toolbar {
     background: var(--bg-secondary) !important;
     border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Override Bootstrap bg-light in dark mode */
+[data-theme="dark"] .bg-light {
+    background-color: var(--bg-secondary) !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .form-label {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .border {
+    border-color: var(--border-color) !important;
 }
 
 .table {
     color: var(--text-primary) !important;
     margin-bottom: 0;
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-primary);
+    --bs-table-border-color: var(--border-color);
+    --bs-table-striped-bg: var(--bg-hover);
+    --bs-table-hover-bg: var(--bg-hover);
 }
 
 .table thead th {
-    background: rgba(108, 99, 255, 0.08);
+    background: rgba(108, 99, 255, 0.08) !important;
     border-bottom: 1px solid var(--border-color) !important;
-    color: var(--text-secondary);
+    color: var(--text-secondary) !important;
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
@@ -602,7 +627,7 @@ input:checked+.slider .fa-moon {
 .table tbody td:last-child {
     position: sticky;
     right: 0;
-    background: var(--bg-secondary);
+    background: var(--bg-secondary) !important;
     z-index: 1;
     box-shadow: -2px 0 4px rgba(0, 0, 0, 0.05);
 }
@@ -612,14 +637,17 @@ input:checked+.slider .fa-moon {
     padding: 14px 16px;
     font-size: 14px;
     vertical-align: middle;
+    background: transparent;
+    color: var(--text-primary) !important;
 }
 
 .table tbody tr {
     transition: var(--transition);
+    background: transparent;
 }
 
 .table tbody tr:hover {
-    background: var(--bg-hover);
+    background: var(--bg-hover) !important;
 }
 
 .table tbody tr:last-child td {
