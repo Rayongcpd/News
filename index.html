@@ -57,6 +57,9 @@
         <a class="topbar-nav-item superadmin-only" style="display: none;" data-page="logs" onclick="navigateTo('logs')">
           <i data-lucide="history" style="width:16px;height:16px;"></i> บันทึกระบบ
         </a>
+        <a class="topbar-nav-item superadmin-only" style="display: none;" data-page="users" onclick="navigateTo('users')">
+          <i data-lucide="shield-check" style="width:16px;height:16px;"></i> จัดการ Admin
+        </a>
       </nav>
 
       <div style="display:flex;align-items:center;gap:12px;">
@@ -101,6 +104,9 @@
       </a>
       <a class="topbar-nav-item superadmin-only" style="display: none;" data-page="logs" onclick="navigateTo('logs'); toggleMobileNav();">
         <i data-lucide="history" style="width:18px;height:18px;"></i> บันทึกระบบ
+      </a>
+      <a class="topbar-nav-item superadmin-only" style="display: none;" data-page="users" onclick="navigateTo('users'); toggleMobileNav();">
+        <i data-lucide="shield-check" style="width:18px;height:18px;"></i> จัดการ Admin
       </a>
     </nav>
 
@@ -418,6 +424,72 @@
           </div>
         </div>
       </div>
+
+      <!-- ======== USER & ADMIN MANAGEMENT PAGE ======== -->
+      <div id="page-users" class="page-section">
+        <div class="page-header">
+          <div>
+            <h3 class="mb-1"><i data-lucide="shield-check" class="lucide-lg"></i>จัดการผู้ดูแลระบบ (Admin & Users)</h3>
+            <p class="text-secondary small mb-0">จัดการรายชื่อผู้ดูแลระบบ สิทธิ์การใช้งาน และเพิ่ม Admin ใหม่</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" onclick="UserManager.load()">
+              <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> รีเฟรช
+            </button>
+            <button class="btn btn-primary-custom btn-sm" onclick="UserManager.showAddModal()">
+              <i data-lucide="user-plus" style="width:15px;height:15px;" class="me-1"></i> เพิ่ม Admin / ผู้ใช้
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="data-card mb-3 p-3">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-6 col-lg-5">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text bg-transparent border-end-0">
+                  <i data-lucide="search" style="width:14px;height:14px;"></i>
+                </span>
+                <input type="text" id="userSearchInput" class="form-control border-start-0" placeholder="ค้นหาตาม Username หรือ ชื่อ-นามสกุล..." oninput="UserManager.filter()">
+              </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
+              <select id="userRoleFilter" class="form-select form-select-sm" onchange="UserManager.filter()">
+                <option value="">ทุกระดับสิทธิ์ (ทั้งหมด)</option>
+                <option value="Superadmin">Superadmin (ผู้ดูแลระบบสูงสุด)</option>
+                <option value="Admin">Admin (ผู้ดูแลระบบ)</option>
+                <option value="User">User (ผู้ใช้งานทั่วไป)</option>
+              </select>
+            </div>
+            <div class="col-md-2 col-lg-4 text-md-end text-secondary small" id="userCountSummary">
+              กำลังโหลด...
+            </div>
+          </div>
+        </div>
+
+        <div class="data-card">
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th style="width: 50px;" class="text-center">#</th>
+                  <th>Username</th>
+                  <th>ชื่อ-นามสกุล</th>
+                  <th>สิทธิ์การใช้งาน (Role)</th>
+                  <th style="width: 140px;" class="text-center">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <tr>
+                  <td colspan="5">
+                    <div class="empty-state"><i data-lucide="inbox" style="width:48px;height:48px;"></i>
+                      <p>กำลังโหลด...</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -915,6 +987,76 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">ยกเลิก</button>
           <button type="button" class="btn btn-primary-custom" id="btnSaveDriverVehicles" onclick="DriverVehicleSettings.save()">
+            <i data-lucide="save" style="width:16px;height:16px;" class="me-2"></i>บันทึกข้อมูล
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ USER / ADMIN MODAL ============ -->
+  <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="userModalTitle">
+            <i data-lucide="user-plus" style="width:18px;height:18px;" class="me-2 text-primary"></i>เพิ่มผู้ดูแลระบบ (Admin)
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="userForm" onsubmit="event.preventDefault(); UserManager.save();">
+            <input type="hidden" id="userFormMode" value="add">
+            
+            <div class="mb-3">
+              <label for="userModalUsername" class="form-label">Username <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text"><i data-lucide="user" style="width:15px;height:15px;"></i></span>
+                <input type="text" class="form-control" id="userModalUsername" placeholder="เช่น somchai, admin_car" required autocomplete="off">
+              </div>
+              <div class="form-text" id="userModalUsernameHelp">ใช้สำหรับเข้าสู่ระบบ ภาษาอังกฤษหรือตัวเลข</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="userModalName" class="form-label">ชื่อ - นามสกุล <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text"><i data-lucide="badge-check" style="width:15px;height:15px;"></i></span>
+                <input type="text" class="form-control" id="userModalName" placeholder="เช่น นายสมชาย ใจดี" required>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="userModalPassword" class="form-label">รหัสผ่าน (Password) <span class="text-danger" id="userModalPasswordReq">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text"><i data-lucide="lock" style="width:15px;height:15px;"></i></span>
+                <input type="password" class="form-control" id="userModalPassword" placeholder="กำหนดรหัสผ่าน" required>
+                <button class="btn btn-outline-secondary" type="button" onclick="UserManager.togglePasswordVisibility()">
+                  <i data-lucide="eye" id="userModalPasswordToggleIcon" style="width:15px;height:15px;"></i>
+                </button>
+              </div>
+              <div class="form-text" id="userModalPasswordHelp">กำหนดรหัสผ่านสำหรับเข้าสู่ระบบ</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="userModalRole" class="form-label">ระดับสิทธิ์ (Role) <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text"><i data-lucide="shield" style="width:15px;height:15px;"></i></span>
+                <select class="form-select" id="userModalRole" required>
+                  <option value="Admin" selected>Admin (ผู้ดูแลระบบ)</option>
+                  <option value="Superadmin">Superadmin (ผู้ดูแลระบบสูงสุด)</option>
+                  <option value="User">User (ผู้ใช้งานทั่วไป)</option>
+                </select>
+              </div>
+              <div class="form-text">
+                <strong>Admin:</strong> จัดการข้อมูลประกาศ การขอใช้รถ และแดชบอร์ดได้<br>
+                <strong>Superadmin:</strong> มีสิทธิ์ทุกอย่าง รวมถึงจัดการ Admin, ตั้งค่าระบบ และดูบันทึกระบบ
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-custom" data-bs-dismiss="modal">ยกเลิก</button>
+          <button type="button" class="btn btn-primary-custom" id="btnSaveUser" onclick="UserManager.save()">
             <i data-lucide="save" style="width:16px;height:16px;" class="me-2"></i>บันทึกข้อมูล
           </button>
         </div>

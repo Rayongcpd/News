@@ -2292,6 +2292,7 @@ function showApp() {
         if (pageId === 'vehicles') VehicleLogs.render(AppState.vehicleLogs);
         if (pageId === 'calendar') Calendar.load();
         if (pageId === 'logs') SystemLogs.load();
+        if (pageId === 'users') UserManager.load();
         if (pageId === 'dashboard') Dashboard.load();
     } else {
         navigateTo('calendar');
@@ -2323,6 +2324,9 @@ function navigateTo(page) {
             break;
         case 'logs':
             SystemLogs.load();
+            break;
+        case 'users':
+            UserManager.load();
             break;
         case 'dashboard':
             Dashboard.load();
@@ -3028,5 +3032,303 @@ const SystemLogs = {
         // Scroll to top of section
         const section = document.getElementById('page-logs');
         if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
+// ============================================================
+// 👥 USER & ADMIN MANAGEMENT MODULE (Superadmin only)
+// ============================================================
+const UserManager = {
+    users: [],
+    filteredUsers: [],
+    editingUsername: null,
+
+    /** Load users from API */
+    async load() {
+        if (!AppState.isSuperAdmin()) return;
+
+        const tbody = document.getElementById('usersTableBody');
+        if (tbody) tbody.innerHTML = loadingHTML();
+
+        const summaryEl = document.getElementById('userCountSummary');
+        if (summaryEl) summaryEl.textContent = 'กำลังโหลด...';
+
+        const result = await API.get({
+            action: 'getUsers',
+            username: AppState.user.username,
+            password: AppState.user.password
+        });
+
+        if (result.success) {
+            this.users = result.data || [];
+            this.filteredUsers = [...this.users];
+            this.filter();
+        } else {
+            if (tbody) tbody.innerHTML = `<tr><td colspan="5">${emptyHTML(result.error || 'ไม่สามารถโหลดข้อมูลผู้ใช้งานได้')}</td></tr>`;
+            if (summaryEl) summaryEl.textContent = 'เกิดข้อผิดพลาด';
+            showToast(result.error || 'โหลดข้อมูลผู้ใช้ไม่สำเร็จ', 'error');
+        }
+    },
+
+    /** Filter users by search text and role select */
+    filter() {
+        const searchInput = document.getElementById('userSearchInput');
+        const roleFilter = document.getElementById('userRoleFilter');
+        const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        const role = roleFilter ? roleFilter.value : '';
+
+        this.filteredUsers = this.users.filter(u => {
+            const matchQuery = !query ||
+                (u.username && u.username.toLowerCase().includes(query)) ||
+                (u.name && u.name.toLowerCase().includes(query));
+            const matchRole = !role || (u.role && u.role.toLowerCase() === role.toLowerCase());
+            return matchQuery && matchRole;
+        });
+
+        this.render();
+    },
+
+    /** Render users table */
+    render() {
+        const tbody = document.getElementById('usersTableBody');
+        const summaryEl = document.getElementById('userCountSummary');
+        if (!tbody) return;
+
+        if (summaryEl) {
+            summaryEl.textContent = `พบ ${this.filteredUsers.length} จากทั้งหมด ${this.users.length} คน`;
+        }
+
+        if (this.filteredUsers.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5">${emptyHTML('ไม่พบข้อมูลผู้ใช้งาน')}</td></tr>`;
+            if (window.lucide) lucide.createIcons();
+            return;
+        }
+
+        tbody.innerHTML = this.filteredUsers.map((item, index) => {
+            const roleLower = (item.role || 'user').toLowerCase();
+            let roleBadge = '';
+            if (roleLower === 'superadmin') {
+                roleBadge = '<span class="badge-role badge-role-superadmin"><i data-lucide="crown" style="width:13px;height:13px;"></i> Superadmin</span>';
+            } else if (roleLower === 'admin') {
+                roleBadge = '<span class="badge-role badge-role-admin"><i data-lucide="shield" style="width:13px;height:13px;"></i> Admin</span>';
+            } else {
+                roleBadge = '<span class="badge-role badge-role-user"><i data-lucide="user" style="width:13px;height:13px;"></i> User</span>';
+            }
+
+            const isCurrentLoggedIn = AppState.user &&
+                AppState.user.username &&
+                item.username &&
+                AppState.user.username.toLowerCase() === item.username.toLowerCase();
+
+            const youBadge = isCurrentLoggedIn ? '<span class="badge bg-light text-dark border ms-1" style="font-size:10px;">(คุณ)</span>' : '';
+
+            return `
+              <tr class="fade-in">
+                <td class="text-center text-muted" data-label="#">${index + 1}</td>
+                <td data-label="Username">
+                  <div class="fw-semibold text-primary font-monospace">${escapeHtml(item.username)} ${youBadge}</div>
+                </td>
+                <td data-label="ชื่อ-นามสกุล">
+                  <div class="fw-medium">${escapeHtml(item.name || '-')}</div>
+                </td>
+                <td data-label="สิทธิ์ (Role)">
+                  ${roleBadge}
+                </td>
+                <td class="text-center" data-label="จัดการ">
+                  <div class="d-flex justify-content-center gap-1">
+                    <button class="btn btn-sm btn-outline-primary" title="แก้ไขข้อมูล" onclick="UserManager.showEditModal('${escapeHtml(item.username)}')">
+                      <i data-lucide="edit-3" style="width:14px;height:14px;"></i>
+                    </button>
+                    ${isCurrentLoggedIn ? `
+                      <button class="btn btn-sm btn-outline-secondary" disabled title="ไม่สามารถลบบัญชีของตัวเองได้">
+                        <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                      </button>
+                    ` : `
+                      <button class="btn btn-sm btn-outline-danger" title="ลบผู้ใช้" onclick="UserManager.deleteUser('${escapeHtml(item.username)}')">
+                        <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                      </button>
+                    `}
+                  </div>
+                </td>
+              </tr>
+            `;
+        }).join('');
+
+        if (window.lucide) lucide.createIcons();
+    },
+
+    /** Show Add Modal */
+    showAddModal() {
+        this.editingUsername = null;
+        document.getElementById('userFormMode').value = 'add';
+        document.getElementById('userModalTitle').innerHTML = '<i data-lucide="user-plus" style="width:18px;height:18px;" class="me-2 text-primary"></i>เพิ่มผู้ดูแลระบบ (Admin) / ผู้ใช้';
+        
+        const usernameInput = document.getElementById('userModalUsername');
+        usernameInput.value = '';
+        usernameInput.disabled = false;
+        document.getElementById('userModalUsernameHelp').textContent = 'ใช้สำหรับเข้าสู่ระบบ ภาษาอังกฤษหรือตัวเลข (ห้ามซ้ำ)';
+
+        document.getElementById('userModalName').value = '';
+
+        const passwordInput = document.getElementById('userModalPassword');
+        passwordInput.value = '';
+        passwordInput.required = true;
+        document.getElementById('userModalPasswordReq').style.display = 'inline';
+        document.getElementById('userModalPasswordHelp').textContent = 'กำหนดรหัสผ่านสำหรับเข้าสู่ระบบ (จำเป็น)';
+
+        document.getElementById('userModalRole').value = 'Admin';
+
+        new bootstrap.Modal(document.getElementById('userModal')).show();
+        if (window.lucide) lucide.createIcons();
+    },
+
+    /** Show Edit Modal */
+    showEditModal(username) {
+        const user = this.users.find(u => u.username.toLowerCase() === username.toLowerCase());
+        if (!user) {
+            showToast('ไม่พบข้อมูลผู้ใช้', 'error');
+            return;
+        }
+
+        this.editingUsername = user.username;
+        document.getElementById('userFormMode').value = 'edit';
+        document.getElementById('userModalTitle').innerHTML = `<i data-lucide="edit-3" style="width:18px;height:18px;" class="me-2 text-primary"></i>แก้ไขข้อมูลผู้ใช้: <strong>${escapeHtml(user.username)}</strong>`;
+
+        const usernameInput = document.getElementById('userModalUsername');
+        usernameInput.value = user.username;
+        usernameInput.disabled = true;
+        document.getElementById('userModalUsernameHelp').textContent = 'Username ไม่สามารถเปลี่ยนแปลงได้';
+
+        document.getElementById('userModalName').value = user.name || '';
+
+        const passwordInput = document.getElementById('userModalPassword');
+        passwordInput.value = '';
+        passwordInput.required = false;
+        document.getElementById('userModalPasswordReq').style.display = 'none';
+        document.getElementById('userModalPasswordHelp').textContent = 'เว้นว่างไว้หากไม่ต้องการเปลี่ยนรหัสผ่าน';
+
+        document.getElementById('userModalRole').value = user.role || 'Admin';
+
+        new bootstrap.Modal(document.getElementById('userModal')).show();
+        if (window.lucide) lucide.createIcons();
+    },
+
+    /** Toggle password field visibility */
+    togglePasswordVisibility() {
+        const passwordInput = document.getElementById('userModalPassword');
+        const icon = document.getElementById('userModalPasswordToggleIcon');
+        if (!passwordInput || !icon) return;
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.setAttribute('data-lucide', 'eye-off');
+        } else {
+            passwordInput.type = 'password';
+            icon.setAttribute('data-lucide', 'eye');
+        }
+        if (window.lucide) lucide.createIcons();
+    },
+
+    /** Save user (Add or Edit) */
+    async save() {
+        if (!AppState.isSuperAdmin()) return;
+
+        const mode = document.getElementById('userFormMode').value;
+        const username = document.getElementById('userModalUsername').value.trim();
+        const name = document.getElementById('userModalName').value.trim();
+        const password = document.getElementById('userModalPassword').value.trim();
+        const role = document.getElementById('userModalRole').value;
+
+        if (mode === 'add') {
+            if (!username) {
+                showToast('กรุณากรอก Username', 'error');
+                return;
+            }
+            if (!name) {
+                showToast('กรุณากรอก ชื่อ-นามสกุล', 'error');
+                return;
+            }
+            if (!password) {
+                showToast('กรุณากรอก รหัสผ่าน', 'error');
+                return;
+            }
+        } else {
+            if (!name) {
+                showToast('กรุณากรอก ชื่อ-นามสกุล', 'error');
+                return;
+            }
+        }
+
+        const saveBtn = document.getElementById('btnSaveUser');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>กำลังบันทึก...';
+
+        let result;
+        if (mode === 'add') {
+            result = await API.post({
+                action: 'addUser',
+                targetUsername: username,
+                targetPassword: password,
+                targetName: name,
+                targetRole: role
+            });
+        } else {
+            result = await API.post({
+                action: 'updateUser',
+                targetUsername: this.editingUsername,
+                targetPassword: password || undefined,
+                targetName: name,
+                targetRole: role
+            });
+        }
+
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i data-lucide="save" style="width:16px;height:16px;" class="me-2"></i>บันทึกข้อมูล';
+
+        if (result.success) {
+            showToast(result.message || (mode === 'add' ? 'เพิ่มผู้ใช้งานสำเร็จ' : 'แก้ไขข้อมูลสำเร็จ'), 'success');
+            const modalEl = document.getElementById('userModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+
+            // If updating current logged in user name or role, update AppState
+            if (mode === 'edit' && AppState.user && AppState.user.username.toLowerCase() === this.editingUsername.toLowerCase()) {
+                AppState.user.name = name;
+                AppState.user.role = role;
+                AppState.saveUser(AppState.user);
+                showApp();
+            }
+
+            await this.load();
+        } else {
+            showToast(result.error || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล', 'error');
+        }
+    },
+
+    /** Delete a user */
+    async deleteUser(username) {
+        if (!AppState.isSuperAdmin()) return;
+
+        if (AppState.user && AppState.user.username.toLowerCase() === username.toLowerCase()) {
+            showToast('ไม่สามารถลบบัญชีของตัวเองได้', 'error');
+            return;
+        }
+
+        if (!confirm(`ยืนยันการลบผู้ใช้ "${username}" หรือไม่?\nการดำเนินการนี้ไม่สามารถยกเลิกได้`)) {
+            return;
+        }
+
+        showToast('กำลังลบผู้ใช้...', 'info');
+        const result = await API.post({
+            action: 'deleteUser',
+            targetUsername: username
+        });
+
+        if (result.success) {
+            showToast(result.message || 'ลบผู้ใช้เรียบร้อยแล้ว', 'success');
+            await this.load();
+        } else {
+            showToast(result.error || 'ลบผู้ใช้ไม่สำเร็จ', 'error');
+        }
     }
 };
