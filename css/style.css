@@ -905,6 +905,89 @@ body {
     opacity: 1;
 }
 
+/* ============ VEHICLE MODAL (1 แถว 2 อัน) ============ */
+#detailModal.vehicle-modal .modal-dialog {
+    max-width: 1160px;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#detailModal.vehicle-modal .modal-body {
+    padding: var(--space-4) var(--space-5);
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.vehicle-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.vehicle-modal-grid.single-item {
+    grid-template-columns: 1fr;
+}
+
+@media (max-width: 767.98px) {
+    .vehicle-modal-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.vehicle-modal-card {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.vehicle-modal-card:hover {
+    border-color: var(--border-medium);
+}
+
+.vehicle-modal-card .vehicle-card-title {
+    color: var(--accent-primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.vehicle-modal-card .vehicle-card-driver {
+    font-size: 0.85em;
+    font-weight: normal;
+}
+
+.vehicle-modal-card .vehicle-card-driver.driver-absent {
+    font-weight: bold;
+    color: var(--accent-danger) !important;
+}
+
+.vehicle-modal-card .vehicle-card-body {
+    font-size: 0.86rem;
+    line-height: 1.5;
+}
+
+.vehicle-modal-card .vehicle-card-footer {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border-light);
+}
+
+@media print {
+    #detailModal.vehicle-modal .modal-dialog {
+        max-width: 100% !important;
+    }
+    .vehicle-modal-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
 /* ============ EMPTY STATE ============ */
 .empty-state {
     text-align: center;
